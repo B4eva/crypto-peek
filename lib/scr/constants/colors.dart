@@ -7,4 +7,6 @@ class CustomColors {
   static const Color bgLight2 = Color(0xFF424657);
   static const Color textFieldBg = Color(0xFFCBC9CE);
   static const Color whitePrimary = Color(0xFFFFFFFF);
+
+  static const Color footerColor = Color(0xFF333646);
 }

@@ -27,15 +27,18 @@ class MainDesktop extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'CoinPeek',
+                    'Crypto Risk Scanner',
                     style: TextStyle(
-                        fontSize: 30.0,
+                        fontSize: 35.0,
                         fontWeight: FontWeight.bold,
                         height: 1.5,
                         color: CustomColors.whitePrimary),
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   const Text(
-                    'CoinPeek is a crypto risk tracker. \nEnter your coin data to generate a free report and uncover potential risks.',
+                    'CoinPeek helps you uncover hidden and potential risks in any cryptocurrency.',
                     style: TextStyle(
                         fontSize: 25.0,
                         fontWeight: FontWeight.w500,
