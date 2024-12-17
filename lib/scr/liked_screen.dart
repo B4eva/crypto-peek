@@ -1,5 +1,5 @@
-import 'package:crypto/scr/coins_details.dart';
-import 'package:crypto/scr/providers/coins_provider.dart';
+import 'package:crypto_tracker/scr/coins_details.dart';
+import 'package:crypto_tracker/scr/providers/coins_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

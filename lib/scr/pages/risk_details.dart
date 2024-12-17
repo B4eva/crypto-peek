@@ -39,10 +39,10 @@ class RiskAssessmentTable extends StatelessWidget {
     ]);
     data.add([
       "Price Changes (%)",
-      _assessPriceChanges(riskData["Price Change (1D)"],
+      _assessPriceChanges(riskData["Price Change (14D)"],
           riskData["Price Change (7D)"], riskData["Price Change (30D)"]),
       riskData["Price Change (7D)"]?.toString() ?? "N/A",
-      _getPriceChangesExplanation(riskData["Price Change (1D)"],
+      _getPriceChangesExplanation(riskData["Price Change (14D)"],
           riskData["Price Change (7D)"], riskData["Price Change (30D)"]),
     ]);
     data.add([
@@ -96,6 +96,7 @@ class RiskAssessmentTable extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: const Text('Risk Assessment Table'),
       ),
       body: SingleChildScrollView(
@@ -176,14 +177,14 @@ class RiskAssessmentTable extends StatelessWidget {
   }
 
   String _assessPriceChanges(
-      double? priceChange1D, double? priceChange7D, double? priceChange30D) {
-    if (priceChange1D == null ||
+      double? priceChange14D, double? priceChange7D, double? priceChange30D) {
+    if (priceChange14D == null ||
         priceChange7D == null ||
         priceChange30D == null) return "N/A";
-    if (priceChange1D > 0 && priceChange7D > 0 && priceChange30D > 0) {
+    if (priceChange14D > 0 && priceChange7D > 0 && priceChange30D > 0) {
       return "OK";
     }
-    int positiveCount = [priceChange1D, priceChange7D, priceChange30D]
+    int positiveCount = [priceChange14D, priceChange7D, priceChange30D]
         .where((change) => change > 0)
         .length;
     if (positiveCount >= 2) return "Caution";
@@ -291,14 +292,14 @@ class RiskAssessmentTable extends StatelessWidget {
   }
 
   String _getPriceChangesExplanation(
-      double? priceChange1D, double? priceChange7D, double? priceChange30D) {
-    if (priceChange1D == null ||
+      double? priceChange14D, double? priceChange7D, double? priceChange30D) {
+    if (priceChange14D == null ||
         priceChange7D == null ||
         priceChange30D == null) return "N/A";
-    if (priceChange1D > 0 && priceChange7D > 0 && priceChange30D > 0) {
+    if (priceChange14D > 0 && priceChange7D > 0 && priceChange30D > 0) {
       return "Consistent growth, showing strong market support.";
     }
-    int positiveCount = [priceChange1D, priceChange7D, priceChange30D]
+    int positiveCount = [priceChange14D, priceChange7D, priceChange30D]
         .where((change) => change > 0)
         .length;
     if (positiveCount >= 2) {

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:crypto/scr/models/coin.dart';
+import 'package:crypto_tracker/scr/models/coin.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {

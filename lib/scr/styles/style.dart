@@ -1,4 +1,4 @@
-import 'package:crypto/scr/constants/colors.dart';
+import 'package:crypto_tracker/scr/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 BoxDecoration kHeaderDecoration = BoxDecoration(

@@ -1,9 +1,10 @@
-import 'package:crypto/scr/models/coin.dart';
-import 'package:crypto/scr/providers/coins_provider.dart';
-import 'package:crypto/scr/widgets/price_chat.dart';
+import 'package:crypto_tracker/scr/api_service.dart';
+import 'package:crypto_tracker/scr/models/coin.dart';
+import 'package:crypto_tracker/scr/providers/coins_provider.dart';
+import 'package:crypto_tracker/scr/widgets/price_chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:crypto/scr/api_service.dart';
+
 // import 'package:crypto/scr/coin.dart';
 
 class CoinDetailScreen extends ConsumerStatefulWidget {

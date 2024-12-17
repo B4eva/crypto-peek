@@ -1,8 +1,8 @@
-import 'package:crypto/scr/styles/style.dart';
-import 'package:crypto/scr/widgets/site_logo.dart';
+import 'package:crypto_tracker/scr/constants/colors.dart';
+import 'package:crypto_tracker/scr/constants/nav_items.dart';
+import 'package:crypto_tracker/scr/styles/style.dart';
+import 'package:crypto_tracker/scr/widgets/site_logo.dart';
 import 'package:flutter/material.dart';
-import 'package:crypto/scr/constants/colors.dart';
-import 'package:crypto/scr/constants/nav_items.dart';
 
 class HeaderDesktop extends StatelessWidget {
   const HeaderDesktop({super.key});

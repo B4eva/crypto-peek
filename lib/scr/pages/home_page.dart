@@ -1,12 +1,11 @@
-import 'package:crypto/main.dart';
-import 'package:crypto/scr/constants/colors.dart';
-import 'package:crypto/scr/constants/size.dart';
-import 'package:crypto/scr/widgets/crypto_risk_form.dart';
-import 'package:crypto/scr/widgets/drawer_mobile.dart';
-import 'package:crypto/scr/widgets/header_desktop.dart';
-import 'package:crypto/scr/widgets/header_mobile.dart';
-import 'package:crypto/scr/widgets/main_desktop.dart';
-import 'package:crypto/scr/widgets/main_mobile.dart';
+import 'package:crypto_tracker/scr/constants/size.dart';
+import 'package:crypto_tracker/scr/widgets/crypto_risk_banner.dart';
+import 'package:crypto_tracker/scr/widgets/crypto_risk_form.dart';
+import 'package:crypto_tracker/scr/widgets/drawer_mobile.dart';
+import 'package:crypto_tracker/scr/widgets/gradient_text.dart';
+import 'package:crypto_tracker/scr/widgets/header_mobile.dart';
+
+import 'package:crypto_tracker/scr/widgets/responsive_center.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,7 +20,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
+    //  final screenSize = MediaQuery.of(context).size;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -30,36 +29,62 @@ class _HomePageState extends State<HomePage> {
           endDrawer: (constraints.maxWidth >= kMinDesktopWidth)
               ? null
               : const MobileDrawer(),
-          backgroundColor: CustomColors.scaffoldBg,
-          body: ListView(
-            children: [
-              // Header
-              if (constraints.maxWidth >= kMinDesktopWidth)
-                const HeaderDesktop()
-              else
-                HeaderMobile(
-                  onLogoTap: () {},
-                  onMenuTap: () {
-                    scaffoldKey.currentState?.openEndDrawer();
-                  },
-                ),
-              // Main desktop content
-              if (constraints.maxWidth >= kMinDesktopWidth)
-                const MainDesktop()
-              else
-                const MainMobile(),
+          backgroundColor: const Color(0xFFFFFFFF),
+          body: ResponsiveCenter(
+            child: ListView(
+              children: [
+                // Header
+                // ResponsiveHeader(),
 
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 40.0,
-                  horizontal: constraints.maxWidth < 600 ? 16.0 : 100.0,
-                ),
-                child: const CryptoRiskForm(),
-              ),
+                if (constraints.maxWidth >= kMinDesktopWidth)
+                  const ResponsiveHeader()
+                else
+                  HeaderMobile(
+                    onLogoTap: () {},
+                    onMenuTap: () {
+                      scaffoldKey.currentState?.openEndDrawer();
+                    },
+                  ),
 
-              // Footer
-              const Footer(),
-            ],
+                const SizedBox(
+                  height: 30,
+                ),
+                const CryptoRiskScannerBanner(),
+
+                const SizedBox(
+                  height: 50,
+                ),
+
+                // Main desktop content
+
+                const CryptoRiskForm(),
+                const SizedBox(
+                  height: 30,
+                ),
+
+                // Footer
+                const Footer(),
+                const SizedBox(
+                  height: 30,
+                ),
+
+                const Divider(),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    '© 2024 Your Company. All rights reserved.',
+                    style: TextStyle(fontSize: 12, color: Color(0xFFA0A3A9)),
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 30,
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -75,26 +100,67 @@ class Footer extends StatelessWidget {
     final screenSize = MediaQuery.of(context).size;
 
     return Container(
-      color: CustomColors
-          .footerColor, // Assuming you have a footer background color
+      // Assuming you have a footer background color
       padding: const EdgeInsets.all(20.0),
       child: screenSize.width < 600
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text(
-                  'Contact Us',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEDA03),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        "CP",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "CoinPeek",
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
-                const Text('Email: support@example.com'),
-                const Text('Phone: +1 (234) 567-890'),
-                const Text('Address: 123 Crypto St, Blockchain City'),
+                const Text(
+                  'Email: support@example.com',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF626262)),
+                ),
+                const Text(
+                  'Phone: +1 (234) 567-890',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF626262)),
+                ),
+                const Text(
+                  'Address: 123 Crypto St, Blockchain City',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF626262)),
+                ),
                 const SizedBox(height: 20),
                 const Text(
                   'Get in Touch',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
                 _buildContactForm(),
@@ -108,21 +174,62 @@ class Footer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Contact information
-                const Expanded(
+                Expanded(
                   flex: 1,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        'Contact Us',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFEDA03),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Text(
+                              "CP",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            "CoinPeek",
+                            style: TextStyle(
+                              fontSize: 23,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 10),
-                      Text('Email: support@example.com'),
-                      Text('Phone: +1 (234) 567-890'),
-                      Text('Address: 123 Crypto St, Blockchain City'),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Email: support@example.com',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF626262)),
+                      ),
+                      const Text(
+                        'Phone: +1 (234) 567-890',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF626262)),
+                      ),
+                      const Text(
+                        'Address: 123 Crypto St, Blockchain City',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF626262)),
+                      ),
                     ],
                   ),
                 ),
@@ -142,7 +249,7 @@ class Footer extends StatelessWidget {
                       _buildContactForm(),
                       const SizedBox(
                         height: 40,
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -155,35 +262,194 @@ class Footer extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const TextField(
+        TextFormField(
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: const BorderSide(color: Colors.grey, width: 0.3)),
             labelText: 'Your Name',
+            hintStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF626262)),
           ),
         ),
         const SizedBox(height: 10),
-        const TextField(
+        TextFormField(
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: const BorderSide(color: Colors.grey, width: 0.03)),
             labelText: 'Your Email',
+            hintStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF626262)),
           ),
         ),
         const SizedBox(height: 10),
-        const TextField(
+        TextFormField(
           decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: const BorderSide(color: Colors.grey, width: 0.3)),
             labelText: 'Your Message',
+            hintStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF626262)),
           ),
           maxLines: 3,
         ),
         const SizedBox(height: 10),
         ElevatedButton(
-          onPressed: () {
-            // Handle form submission
-          },
-          child: const Text('Send Message'),
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2752E7),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.all(20),
+          ),
+          child: const Text(
+            "Send Message",
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+          ),
         ),
       ],
+    );
+  }
+}
+
+class ResponsiveHeader extends StatelessWidget {
+  const ResponsiveHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Logo and Brand Name
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEDA03),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  "CP",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                "CoinPeek",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              if (!isMobile)
+                Container(
+                  width: 350,
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF6F6F6),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Search Coin",
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.search, color: Colors.grey),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          // Search Bar
+
+          // Navigation Items
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: const Text(
+                  "Home",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const GradientText(
+                  text: "Calculator",
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.pink,
+                      Colors.purple,
+                      Colors.orange,
+                      Colors.yellow,
+                    ],
+                  ),
+                  style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
+                onPressed: () {},
+                child: const Text(
+                  "Contact",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
