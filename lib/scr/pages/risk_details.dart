@@ -16,72 +16,72 @@ class RiskAssessmentTable extends StatelessWidget {
     data.add([
       "Year Founded",
       _assessYearFounded(riskData["Year Founded"]),
-      riskData["Year Founded"] ?? "N/A",
+      riskData["Year Founded"] ?? "No Data Provided",
       _getYearFoundedExplanation(riskData["Year Founded"]),
     ]);
     data.add([
       "Exchanges Listed",
       _assessExchangesListed(riskData["Exchanges Listed"]),
-      riskData["Exchanges Listed"] ?? "N/A",
+      riskData["Exchanges Listed"] ?? "No Data Provided",
       _getExchangesListedExplanation(riskData["Exchanges Listed"]),
     ]);
     data.add([
       "Market Capitalization (USD)",
       _assessMarketCap(riskData["Market Capitalization"]),
-      riskData["Market Capitalization"]?.toString() ?? "N/A",
+      riskData["Market Capitalization"]?.toString() ?? "No Data Provided",
       _getMarketCapExplanation(riskData["Market Capitalization"]),
     ]);
     data.add([
       "Trading Volume (USD)",
       _assessTradingVolume(riskData["Trading Volume"]),
-      riskData["Trading Volume"]?.toString() ?? "N/A",
+      riskData["Trading Volume"]?.toString() ?? "No Data Provided",
       _getTradingVolumeExplanation(riskData["Trading Volume"]),
     ]);
     data.add([
       "Price Changes (%)",
       _assessPriceChanges(riskData["Price Change (14D)"],
           riskData["Price Change (7D)"], riskData["Price Change (30D)"]),
-      riskData["Price Change (7D)"]?.toString() ?? "N/A",
+      riskData["Price Change (7D)"]?.toString() ?? "No Data Provided",
       _getPriceChangesExplanation(riskData["Price Change (14D)"],
           riskData["Price Change (7D)"], riskData["Price Change (30D)"]),
     ]);
     data.add([
       "1-Year Price Change (%)",
       _assessOneYearPriceChange(riskData["Price Change (1Y)"]),
-      riskData["Price Change (1Y)"]?.toString() ?? "N/A",
+      riskData["Price Change (1Y)"]?.toString() ?? "No Data Provided",
       _getOneYearPriceChangeExplanation(riskData["Price Change (1Y)"]),
     ]);
     data.add([
       "All-Time High (USD)",
       _assessAllTimeHigh(riskData["All-Time High"], riskData["Current Price"]),
-      riskData["All-Time High"]?.toString() ?? "N/A",
+      riskData["All-Time High"]?.toString() ?? "No Data Provided",
       _getAllTimeHighExplanation(
           riskData["All-Time High"], riskData["Current Price"]),
     ]);
     data.add([
       "All-Time Low (USD)",
       _assessAllTimeLow(riskData["All-Time Low"], riskData["Current Price"]),
-      riskData["All-Time Low"]?.toString() ?? "N/A",
+      riskData["All-Time Low"]?.toString() ?? "No Data Provided",
       _getAllTimeLowExplanation(
           riskData["All-Time Low"], riskData["Current Price"]),
     ]);
     data.add([
       "Whale Holdings (%)",
       _assessWhaleHoldings(riskData["Whale Holdings"]),
-      riskData["Whale Holdings"]?.toString() ?? "N/A",
+      riskData["Whale Holdings"]?.toString() ?? "No Data Provided",
       _getWhaleHoldingsExplanation(riskData["Whale Holdings"]),
     ]);
     data.add([
       "Addresses by Holdings (%)",
       _assessAddressesByHoldings(riskData["0-\$1k Holdings"]),
-      riskData["0-\$1k Holdings"]?.toString() ?? "N/A",
+      riskData["0-\$1k Holdings"]?.toString() ?? "No Data Provided",
       _getAddressesByHoldingsExplanation(riskData["0-\$1k Holdings"]),
     ]);
     data.add([
       "Addresses by Time Held (%)",
       _assessAddressesByTimeHeld(
           riskData["Hodlers (> 1 year)"], riskData["Traders (< 1 month)"]),
-      riskData["Hodlers (> 1 year)"]?.toString() ?? "N/A",
+      riskData["Hodlers (> 1 year)"]?.toString() ?? "No Data Provided",
       _getAddressesByTimeHeldExplanation(
           riskData["Hodlers (> 1 year)"], riskData["Traders (< 1 month)"]),
     ]);
@@ -89,7 +89,7 @@ class RiskAssessmentTable extends StatelessWidget {
       "Community Sentiment (%)",
       _assessCommunitySentiment(
           riskData["Bullish Sentiment"], riskData["Bearish Sentiment"]),
-      riskData["Bullish Sentiment"]?.toString() ?? "N/A",
+      riskData["Bullish Sentiment"]?.toString() ?? "No Data Provided",
       _getCommunitySentimentExplanation(
           riskData["Bullish Sentiment"], riskData["Bearish Sentiment"]),
     ]);
@@ -144,14 +144,14 @@ class RiskAssessmentTable extends StatelessWidget {
 
   // Refined assessment methods based on the criteria
   String _assessYearFounded(String? yearFounded) {
-    if (yearFounded == null) return "N/A";
+    if (yearFounded == null) return "No Data Provided";
     if (yearFounded.contains("> 5 years")) return "OK";
     if (yearFounded.contains("1 - 5 years")) return "Caution";
     return "Warning";
   }
 
   String _assessExchangesListed(String? exchangesListed) {
-    if (exchangesListed == null) return "N/A";
+    if (exchangesListed == null) return "No Data Provided";
     if (exchangesListed.contains("Binance") &&
         exchangesListed.contains("Coinbase")) return "OK";
     if (exchangesListed.contains("Kraken") ||
@@ -163,14 +163,14 @@ class RiskAssessmentTable extends StatelessWidget {
   }
 
   String _assessMarketCap(double? marketCap) {
-    if (marketCap == null) return "N/A";
+    if (marketCap == null) return "No Data Provided";
     if (marketCap > 10e9) return "OK";
     if (marketCap >= 1e9) return "Caution";
     return "Warning";
   }
 
   String _assessTradingVolume(double? tradingVolume) {
-    if (tradingVolume == null) return "N/A";
+    if (tradingVolume == null) return "No Data Provided";
     if (tradingVolume > 500e6) return "OK";
     if (tradingVolume >= 100e6) return "Caution";
     return "Warning";
@@ -180,7 +180,7 @@ class RiskAssessmentTable extends StatelessWidget {
       double? priceChange14D, double? priceChange7D, double? priceChange30D) {
     if (priceChange14D == null ||
         priceChange7D == null ||
-        priceChange30D == null) return "N/A";
+        priceChange30D == null) return "No Data Provided";
     if (priceChange14D > 0 && priceChange7D > 0 && priceChange30D > 0) {
       return "OK";
     }
@@ -192,49 +192,49 @@ class RiskAssessmentTable extends StatelessWidget {
   }
 
   String _assessOneYearPriceChange(double? oneYearPriceChange) {
-    if (oneYearPriceChange == null) return "N/A";
+    if (oneYearPriceChange == null) return "No Data Provided";
     if (oneYearPriceChange > 20) return "OK";
     if (oneYearPriceChange >= -20) return "Caution";
     return "Warning";
   }
 
   String _assessAllTimeHigh(double? allTimeHigh, double? currentPrice) {
-    if (allTimeHigh == null || currentPrice == null) return "N/A";
+    if (allTimeHigh == null || currentPrice == null) return "No Data Provided";
     if (currentPrice >= allTimeHigh * 0.8) return "OK";
     if (currentPrice >= allTimeHigh * 0.5) return "Caution";
     return "Warning";
   }
 
   String _assessAllTimeLow(double? allTimeLow, double? currentPrice) {
-    if (allTimeLow == null || currentPrice == null) return "N/A";
+    if (allTimeLow == null || currentPrice == null) return "No Data Provided";
     if (currentPrice >= allTimeLow * 2) return "OK";
     if (currentPrice >= allTimeLow * 1.5) return "Caution";
     return "Warning";
   }
 
   String _assessWhaleHoldings(double? whaleHoldings) {
-    if (whaleHoldings == null) return "N/A";
+    if (whaleHoldings == null) return "No Data Provided";
     if (whaleHoldings < 10) return "OK";
     if (whaleHoldings <= 20) return "Caution";
     return "Warning";
   }
 
   String _assessAddressesByHoldings(double? holdings) {
-    if (holdings == null) return "N/A";
+    if (holdings == null) return "No Data Provided";
     if (holdings > 50) return "OK";
     if (holdings >= 20) return "Caution";
     return "Warning";
   }
 
   String _assessAddressesByTimeHeld(double? hodlers, double? traders) {
-    if (hodlers == null || traders == null) return "N/A";
+    if (hodlers == null || traders == null) return "No Data Provided";
     if (hodlers > 50) return "OK";
     if (traders < 50) return "Caution";
     return "Warning";
   }
 
   String _assessCommunitySentiment(double? bullish, double? bearish) {
-    if (bullish == null || bearish == null) return "N/A";
+    if (bullish == null || bearish == null) return "No Data Provided";
     double sentiment = bullish / (bullish + bearish) * 100;
     if (sentiment > 70) return "OK";
     if (sentiment >= 50) return "Caution";
@@ -243,146 +243,146 @@ class RiskAssessmentTable extends StatelessWidget {
 
   // Explanation methods for each criterion
   String _getYearFoundedExplanation(String? yearFounded) {
-    if (yearFounded == null) return "N/A";
+    if (yearFounded == null) return "No Data Provided";
     if (yearFounded.contains("> 5 years")) {
-      return "Established history, showing resilience and proven stability over time.";
+      return "The coin has an established history, showing resilience and proven stability over time.";
     }
     if (yearFounded.contains("1 - 5 years")) {
-      return "Moderate age, indicating some experience but still maturing in the market.";
+      return "The coin is of moderate age, indicating some experience but still maturing in the market.";
     }
-    return "Very new, with limited history; may face uncertainties and volatility as it establishes itself.";
+    return "The coin is very new with limited history, which may result in uncertainties and volatility as it establishes itself.";
   }
 
   String _getExchangesListedExplanation(String? exchangesListed) {
-    if (exchangesListed == null) return "N/A";
-    if (exchangesListed.contains("Binance") &&
-        exchangesListed.contains("Coinbase")) {
-      return "High credibility and accessibility through trusted exchanges.";
+    if (exchangesListed == null) return "No Data Provided";
+    if (exchangesListed.contains("Binance") ||
+        exchangesListed.contains("OKX") ||
+        exchangesListed.contains("Coinbase") ||
+        exchangesListed.contains("ByBit")) {
+      return "The coin is listed on both Binance and Coinbase, which are highly credible and offer broad accessibility.";
     }
     if (exchangesListed.contains("Kraken") ||
-        exchangesListed.contains("OKX") ||
         exchangesListed.contains("Gemini") ||
-        exchangesListed.contains("KuCoin") ||
-        exchangesListed.contains("ByBit")) {
-      return "Reasonably credible with moderate accessibility.";
+        exchangesListed.contains("KuCoin")) {
+      return "The coin is listed on at least two of Kraken, OKX, Gemini, KuCoin, or ByBit, which are reasonably credible and provide moderate access.";
     }
-    return "Limited accessibility, potentially indicating lower credibility.";
+    return "The coin is listed only on smaller exchanges, which limits accessibility and may suggest lower credibility.";
   }
 
   String _getMarketCapExplanation(double? marketCap) {
-    if (marketCap == null) return "N/A";
+    if (marketCap == null) return "No Data Provided";
     if (marketCap > 10e9) {
-      return "Large cap, indicating stability and lower risk of major price swings.";
+      return "The coin has a large market cap, indicating stability and a low risk of major price swings.";
     }
     if (marketCap >= 1e9) {
-      return "Mid-cap, reasonably stable but with potential for moderate volatility.";
+      return "The coin has a mid-market cap, which is reasonably stable but may experience moderate volatility.";
     }
-    return "Small cap, more susceptible to large price swings and market manipulation.";
+    return "The coin has a small market cap, making it more susceptible to large price swings and potential market manipulation.";
   }
 
   String _getTradingVolumeExplanation(double? tradingVolume) {
-    if (tradingVolume == null) return "N/A";
+    if (tradingVolume == null) return "No Data Provided";
     if (tradingVolume > 500e6) {
-      return "High liquidity, easy to buy/sell without affecting the price significantly.";
+      return "The coin has high liquidity, making it easy to buy or sell without significantly affecting its price.";
     }
     if (tradingVolume >= 100e6) {
-      return "Moderate liquidity, with some risk of slippage during trades.";
+      return "The coin has moderate liquidity, so there may be some risk of price fluctuations or slippage during trades.";
     }
-    return "Low liquidity, making it vulnerable to high slippage and price manipulation.";
+    return "The coin has low liquidity, making it vulnerable to high slippage and price manipulation.";
   }
 
   String _getPriceChangesExplanation(
       double? priceChange14D, double? priceChange7D, double? priceChange30D) {
     if (priceChange14D == null ||
         priceChange7D == null ||
-        priceChange30D == null) return "N/A";
+        priceChange30D == null) return "No Data Provided";
     if (priceChange14D > 0 && priceChange7D > 0 && priceChange30D > 0) {
-      return "Consistent growth, showing strong market support.";
+      return "The coin has experienced consistent growth, showing strong support from the market.";
     }
     int positiveCount = [priceChange14D, priceChange7D, priceChange30D]
         .where((change) => change > 0)
         .length;
     if (positiveCount >= 2) {
-      return "Mixed performance, indicating potential for moderate fluctuations.";
+      return "The coin shows mixed performance, indicating some moderate fluctuations and potential for risk.";
     }
-    return "Unstable, indicating recent or ongoing declines.";
+    return "The coin's price changes have been unstable, indicating declines or high volatility.";
   }
 
   String _getOneYearPriceChangeExplanation(double? oneYearPriceChange) {
-    if (oneYearPriceChange == null) return "N/A";
+    if (oneYearPriceChange == null) return "No Data Provided";
     if (oneYearPriceChange > 20) {
-      return "Strong long-term growth, indicating resilience and positive market sentiment.";
+      return "The coin has shown strong growth over the past year, reflecting resilience and positive market sentiment.";
     }
     if (oneYearPriceChange >= -20) {
-      return "Small gains/losses, indicating some fluctuations but relative stability.";
+      return "The coin has experienced small gains or losses, indicating relative stability with some fluctuations.";
     }
-    return "Significant decline, indicating high volatility and potential loss of market confidence.";
+    return "The coin has seen a significant decline, showing high volatility and a potential loss of market confidence.";
   }
 
   String _getAllTimeHighExplanation(double? allTimeHigh, double? currentPrice) {
-    if (allTimeHigh == null || currentPrice == null) return "N/A";
+    if (allTimeHigh == null || currentPrice == null) return "No Data Provided";
     if (currentPrice >= allTimeHigh * 0.8) {
-      return "The current price is close to the all-time high, within 20% of its peak. This stability suggests strong market support, with low volatility risk.";
+      return "The current price is close to its all-time high (within 20%), suggesting stability and low volatility risk.";
     }
     if (currentPrice >= allTimeHigh * 0.5) {
-      return "The current price is moderately below the all-time high, falling between 20% and 50% of its peak. While there’s been some decline, the asset shows potential to recover.";
+      return "The current price is moderately below its all-time high (between 20%-50% lower), indicating potential for recovery.";
     }
-    return "The current price is significantly below its all-time high, over 50% off its peak. This suggests high volatility and a potential struggle to regain previous highs.";
+    return "The current price is significantly below its all-time high (more than 50% lower), which suggests high volatility and difficulty regaining previous highs.";
   }
 
   String _getAllTimeLowExplanation(double? allTimeLow, double? currentPrice) {
-    if (allTimeLow == null || currentPrice == null) return "N/A";
+    if (allTimeLow == null || currentPrice == null) return "No Data Provided";
     if (currentPrice >= allTimeLow * 2) {
-      return "The current price is comfortably above the all-time low, more than double its lowest value. This distance from the ATL suggests a stable support level.";
+      return "The current price is comfortably above its all-time low (more than double the lowest value), which suggests a strong support level.";
     }
     if (currentPrice >= allTimeLow * 1.5) {
-      return "The current price is moderately above the all-time low, sitting 50% to 100% higher. Although it’s moved up, the asset shows some sensitivity to downside pressure.";
+      return "The current price is moderately above its all-time low (50%-100% higher), suggesting some downside risk but a potential for further recovery.";
     }
-    return "The current price is close to its all-time low, within 50% of the lowest recorded value. This proximity to the ATL indicates potential instability and low market support.";
+    return "The current price is close to its all-time low (within 50%), indicating potential instability and weak market support..";
   }
 
   String _getWhaleHoldingsExplanation(double? whaleHoldings) {
-    if (whaleHoldings == null) return "N/A";
+    if (whaleHoldings == null) return "No Data Provided";
     if (whaleHoldings < 10) {
-      return "Decentralized, low risk of price manipulation by large holders.";
+      return "The coin is decentralized, with a low risk of price manipulation by large holders.";
     }
     if (whaleHoldings <= 20) {
-      return "Moderate concentration, some influence from large holders but not dominant.";
+      return "The coin has a moderate concentration of whale holdings, meaning there is some influence from large holders but not a dominant position.";
     }
-    return "High concentration, significant risk of price manipulation by large holders.";
+    return "The coin has a high concentration of whale holdings, which presents a significant risk of price manipulation by large holders.";
   }
 
   String _getAddressesByHoldingsExplanation(double? holdings) {
-    if (holdings == null) return "N/A";
+    if (holdings == null) return "No Data Provided";
     if (holdings > 50) {
-      return "High retail interest, indicating wide adoption and community support.";
+      return "The coin has high retail interest, indicating broad adoption and strong community support.";
     }
     if (holdings >= 20) {
-      return "Moderate retail interest, with balanced retail and large holder presence.";
+      return "The coin shows a balance of retail and large holder interest, which suggests moderate retail interest and adoption.";
     }
-    return "Low retail interest, potentially high concentration among few large holders.";
+    return "The coin has low retail interest, with a high concentration of holdings among a few large holders.";
   }
 
   String _getAddressesByTimeHeldExplanation(double? hodlers, double? traders) {
-    if (hodlers == null || traders == null) return "N/A";
+    if (hodlers == null || traders == null) return "No Data Provided";
     if (hodlers > 50) {
-      return "Dominance of long-term holders, indicating strong confidence and low volatility.";
+      return "The coin is dominated by long-term holders, suggesting strong confidence and low volatility.";
     }
     if (traders < 50) {
-      return "Balanced, with both long-term and mid-term confidence.";
+      return "The coin shows a balance of long-term and mid-term holders, indicating stability with moderate fluctuations.";
     }
-    return "Predominantly short-term holders, suggesting speculative trading and high volatility.";
+    return "The coin is predominantly held by short-term traders, suggesting speculative trading and high volatility.";
   }
 
   String _getCommunitySentimentExplanation(double? bullish, double? bearish) {
-    if (bullish == null || bearish == null) return "N/A";
+    if (bullish == null || bearish == null) return "No Data Provided";
     double sentiment = bullish / (bullish + bearish) * 100;
     if (sentiment > 70) {
-      return "High confidence and positive perception among the community.";
+      return "The community has high confidence and a positive perception of the coin.";
     }
     if (sentiment >= 50) {
-      return "Moderate sentiment, with mixed opinions in the community.";
+      return "The community sentiment is mixed, with both positive and negative opinions.";
     }
-    return "Low confidence, indicating skepticism or negative perception.";
+    return "The community sentiment is low, with skepticism or negative perceptions about the coin.";
   }
 }

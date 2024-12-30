@@ -46,34 +46,9 @@ class MainDesktop extends StatelessWidget {
                     color: CustomColors.whitePrimary),
               ),
               SizedBox(height: 15),
-              // ElevatedButton(
-              //   onPressed: () {},
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: const Color.fromARGB(255, 230, 212, 47),
-              //     minimumSize: const Size(
-              //         200, 60), // Set minimum size for width and height
-              //     shape: RoundedRectangleBorder(
-              //       borderRadius:
-              //           BorderRadius.circular(15), // Set border radius
-              //     ),
-              //   ),
-              //   child: const Text(
-              //     'Get started',
-              //     style: TextStyle(
-              //       color: Colors.white, // Set text color to white
-              //       fontSize: 18, // Set text size to 18
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
-        // Expanded(
-        //   child: Image.asset(
-        //     'assets/images/crypto.gif',
-        //     width: screenSize.width / 2,
-        //   ),
-        // )
       ],
     ));
   }

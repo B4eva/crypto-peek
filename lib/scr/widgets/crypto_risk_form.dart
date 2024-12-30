@@ -62,7 +62,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
             _buildInputField(
               controller: coinNameController,
               label: "Coin Name",
-              hint: "Enter cryptocurrency name (e.g., Bitcoin)",
+              hint: "Enter the name of the cryptocurrency.",
               isRequired: true,
               isNumeric: false, // Coin name is not numeric
             ),
@@ -70,7 +70,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
             // Year Founded
             _buildDropdownField(
               label: "Coin Age",
-              hint: 'e.g 2010',
+              hint: ' < 1 year',
               value: yearFounded,
               onChanged: (value) => setState(() => yearFounded = value),
               items: const [
@@ -84,19 +84,22 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
             // Exchanges Listed
             _buildDropdownField(
               label: "Exchanges Listed",
-              hint: 'e.g Binance or Coinbase',
+              hint: ' Binance or Coinbase',
               value: exchangesListed,
               onChanged: (value) => setState(() => exchangesListed = value),
               items: const [
                 DropdownMenuItem(
                     value: "Binance or Coinbase",
-                    child: Text("Listed on Binance or Coinbase")),
+                    child: Text(
+                        "Listed on major exchanges (e.g. Binance, Coinbase, ByBit, OKX)")),
                 DropdownMenuItem(
                     value: "Crypto.com, Kraken, etc.",
-                    child: Text("Listed on Crypto.com, Kraken, etc.")),
+                    child: Text(
+                        "Listed on a other reputable exchanges (e.g. Gemini, KuCoin, Kraken)")),
                 DropdownMenuItem(
                     value: "Other Exchanges",
-                    child: Text("Listed only on other exchanges")),
+                    child:
+                        Text("Listed only on smaller or less-known exchanges")),
               ],
             ),
             const SizedBox(height: 20),
@@ -104,22 +107,21 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
             _buildInputField(
                 controller: currentPriceController,
                 label: "Current Price (USD)",
-                hint: "Enter current price in USD (e.g., 24.50)",
+                hint: "Enter current price in USD",
                 isRequired: true),
             const SizedBox(height: 20),
             // Market Capitalization
             _buildInputField(
               controller: marketCapController,
               label: "Market Capitalization (USD)",
-              hint: "Enter market cap in USD (e.g., 10,000,000,000)",
+              hint: "Enter the market cap in USD.",
             ),
             const SizedBox(height: 20),
             // Trading Volume
             _buildInputField(
               controller: tradingVolumeController,
-              label: "Trading Volume (USD)",
-              hint:
-                  "Enter the 24-hour trading volume in USD (e.g., 500,000,000)",
+              label: "Trading Volume ",
+              hint: "Enter the % change for each time period.",
             ),
             const SizedBox(height: 20),
             const Text('Price Changes (%)',
@@ -135,23 +137,23 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: priceChange7DController,
                     label: "7D",
-                    hint: "e.g. 5.2",
+                    hint: "Enter 7-day price change in %.",
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _buildInputField(
                     controller: priceChange14DController,
-                    label: "14D",
-                    hint: "e.g. -3.4",
+                    label: "30D",
+                    hint: "Enter 30-day price change in %.",
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _buildInputField(
                     controller: priceChange30DController,
-                    label: "30D",
-                    hint: "e.g. 12.0",
+                    label: "90D",
+                    hint: " Enter 90-day price change in %.",
                   ),
                 ),
               ],
@@ -160,10 +162,10 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
             _buildInputField(
               controller: priceChange1YController,
               label: "1-Year Price Change %",
-              hint: "Enter % 1 year change e.g -25.0",
+              hint: "Enter the 1-year price change in %.",
             ),
             const SizedBox(height: 20),
-            const Text('All Time Price (\$)',
+            const Text('All-Time High Price (\$)',
                 style: TextStyle(
                     fontSize: 14,
                     color: Color(0xFF000000),
@@ -174,16 +176,16 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                 Expanded(
                   child: _buildInputField(
                     controller: allTimeHighController,
-                    label: "All Time High",
-                    hint: "e.g 150.0",
+                    label: "All-Time High Price (\$)",
+                    hint: "Enter the all-time high price in USD.",
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _buildInputField(
                     controller: allTimeLowController,
-                    label: "All Time Low",
-                    hint: "e.g 0.50",
+                    label: "All-Time Low Price (\$)",
+                    hint: "Enter the all-time low price in USD.",
                   ),
                 ),
               ],
@@ -193,7 +195,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
             _buildInputField(
               controller: whaleHoldingsController,
               label: "Whale Holdings (%)",
-              hint: "Enter % of total supply held by large holders (e.g. 15.0)",
+              hint: "Enter the % of total supply held by large holders.",
             ),
             const SizedBox(height: 20),
             const Text('Addresses by Holding (%)',
@@ -208,7 +210,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: holdings0To1kController,
                     label: "0-\$1k",
-                    hint: "34.0",
+                    hint: "Enter % of addresses holding \$0-\$1k.",
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -216,7 +218,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: holdings1kTo100kController,
                     label: "\$1k-\$100k",
-                    hint: "e.g. 25.0",
+                    hint: " Enter % of addresses holding \$1k-\$100k.",
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -224,7 +226,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: holdings100kPlusController,
                     label: "\$100k+",
-                    hint: "e.g 40.0",
+                    hint: " Enter % of addresses holding over \$100k.",
                   ),
                 ),
               ],
@@ -242,7 +244,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: cruisersController,
                     label: "Cruisers (%)",
-                    hint: "e.g 35.0",
+                    hint: "Enter % of addresses holding 1-12 months.",
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -250,7 +252,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: tradersController,
                     label: "Traders (%)",
-                    hint: "e.g. 40.0",
+                    hint: "Enter % of addresses holding less than 1 month.",
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -258,7 +260,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: hodlersController,
                     label: "Holders (%)",
-                    hint: "30.0",
+                    hint: " Enter % of addresses holding over 1 year.",
                   ),
                 ),
               ],
@@ -276,7 +278,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: bullishSentimentController,
                     label: "Bullish (%)",
-                    hint: "65.0",
+                    hint: "Enter % of community sentiment that is bullish.",
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -284,7 +286,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
                   child: _buildInputField(
                     controller: bearishSentimentController,
                     label: "Bearish (%)",
-                    hint: "35.0",
+                    hint: "Enter % of community sentiment that is bearish.",
                   ),
                 ),
               ],
@@ -322,6 +324,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
 
   Widget _buildInputField({
     required TextEditingController controller,
+    ValueChanged<String>? onChanged,
     required String label,
     String hint = "",
     TextInputType keyboardType = TextInputType.text,
@@ -340,10 +343,11 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(
-                fontWeight: FontWeight.w400, fontSize: 14, color: Colors.grey),
+                fontWeight: FontWeight.w400, fontSize: 12, color: Colors.grey),
             disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: const BorderSide(color: Colors.grey, width: 0.03)),
@@ -399,7 +403,7 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(
-                fontWeight: FontWeight.w400, fontSize: 14, color: Colors.grey),
+                fontWeight: FontWeight.w400, fontSize: 12, color: Colors.grey),
             border:
                 OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
           ),
@@ -413,34 +417,25 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
       Map<String, dynamic> formData = {
         "Coin Name": coinNameController.text,
         "Year Founded": yearFounded,
-        "Current Price": double.tryParse(currentPriceController.text) ?? 0.0,
-        "Market Capitalization":
-            double.tryParse(marketCapController.text) ?? 0.0,
-        "Trading Volume": double.tryParse(tradingVolumeController.text) ?? 0.0,
-        "Price Change (7D)":
-            double.tryParse(priceChange7DController.text) ?? 0.0,
-        "Price Change (14D)":
-            double.tryParse(priceChange14DController.text) ?? 0.0,
-        "Price Change (30D)":
-            double.tryParse(priceChange30DController.text) ?? 0.0,
-        "Price Change (1Y)":
-            double.tryParse(priceChange1YController.text) ?? 0.0,
-        "All-Time High": double.tryParse(allTimeHighController.text) ?? 0.0,
-        "All-Time Low": double.tryParse(allTimeLowController.text) ?? 0.0,
-        "Whale Holdings": double.tryParse(whaleHoldingsController.text) ?? 0.0,
-        "0-\$1k Holdings": double.tryParse(holdings0To1kController.text) ?? 0.0,
+        "Current Price": double.tryParse(currentPriceController.text),
+        "Market Capitalization": double.tryParse(marketCapController.text),
+        "Trading Volume": double.tryParse(tradingVolumeController.text),
+        "Price Change (7D)": double.tryParse(priceChange7DController.text),
+        "Price Change (14D)": double.tryParse(priceChange14DController.text),
+        "Price Change (30D)": double.tryParse(priceChange30DController.text),
+        "Price Change (1Y)": double.tryParse(priceChange1YController.text),
+        "All-Time High": double.tryParse(allTimeHighController.text),
+        "All-Time Low": double.tryParse(allTimeLowController.text),
+        "Whale Holdings": double.tryParse(whaleHoldingsController.text),
+        "0-\$1k Holdings": double.tryParse(holdings0To1kController.text),
         "\$1k-\$100k Holdings":
-            double.tryParse(holdings1kTo100kController.text) ?? 0.0,
-        "\$100k+ Holdings":
-            double.tryParse(holdings100kPlusController.text) ?? 0.0,
-        "Cruisers (1-12 months)":
-            double.tryParse(cruisersController.text) ?? 0.0,
-        "Traders (< 1 month)": double.tryParse(tradersController.text) ?? 0.0,
-        "Hodlers (> 1 year)": double.tryParse(hodlersController.text) ?? 0.0,
-        "Bullish Sentiment":
-            double.tryParse(bullishSentimentController.text) ?? 0.0,
-        "Bearish Sentiment":
-            double.tryParse(bearishSentimentController.text) ?? 0.0,
+            double.tryParse(holdings1kTo100kController.text),
+        "\$100k+ Holdings": double.tryParse(holdings100kPlusController.text),
+        "Cruisers (1-12 months)": double.tryParse(cruisersController.text),
+        "Traders (< 1 month)": double.tryParse(tradersController.text),
+        "Hodlers (> 1 year)": double.tryParse(hodlersController.text),
+        "Bullish Sentiment": double.tryParse(bullishSentimentController.text),
+        "Bearish Sentiment": double.tryParse(bearishSentimentController.text),
         "Exchanges Listed": exchangesListed,
       };
       // Navigate to the RiskDetails page with the collected data
@@ -448,6 +443,36 @@ class _CryptoRiskFormState extends State<CryptoRiskForm> {
         context,
         MaterialPageRoute(
           builder: (context) => RiskAssessmentTable(riskData: formData),
+        ),
+      );
+    }
+  }
+
+  void _validateSum(BuildContext context) {
+    final bullishValue = double.tryParse(bullishSentimentController.text) ?? 0;
+    final bearishValue = double.tryParse(bearishSentimentController.text) ?? 0;
+    final total = bullishValue + bearishValue;
+
+    if (total > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('The total percentage cannot exceed 100%.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (total < 100) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('The total percentage is less than 100%.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } else {
+      // Optionally, you can show a success message when it equals 100
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Total percentage is exactly 100%.'),
+          backgroundColor: Colors.green,
         ),
       );
     }

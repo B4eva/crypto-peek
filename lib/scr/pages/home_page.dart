@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                 const Align(
                   alignment: Alignment.center,
                   child: Text(
-                    '© 2024 Your Company. All rights reserved.',
+                    '© 2024. All rights reserved.',
                     style: TextStyle(fontSize: 12, color: Color(0xFFA0A3A9)),
                   ),
                 ),
@@ -137,14 +137,14 @@ class Footer extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'Email: support@example.com',
+                  'Email: ttbumah@gmail.com',
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                       color: Color(0xFF626262)),
                 ),
                 const Text(
-                  'Phone: +1 (234) 567-890',
+                  'Phone: +44 7375 937236',
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -210,14 +210,14 @@ class Footer extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        'Email: support@example.com',
+                        'Email: ttbumah@gmail.com',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: Color(0xFF626262)),
                       ),
                       const Text(
-                        'Phone: +1 (234) 567-890',
+                        'Phone: +44 7375 937236',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
@@ -364,29 +364,29 @@ class ResponsiveHeader extends StatelessWidget {
               const SizedBox(
                 width: 20,
               ),
-              if (!isMobile)
-                Container(
-                  width: 350,
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF6F6F6),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Search Coin",
-                          ),
-                        ),
-                      ),
-                      Icon(Icons.search, color: Colors.grey),
-                    ],
-                  ),
-                ),
+              // if (!isMobile )
+              //   Container(
+              //     width: 350,
+              //     margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              //     decoration: BoxDecoration(
+              //       color: const Color(0xFFF6F6F6),
+              //       borderRadius: BorderRadius.circular(12),
+              //     ),
+              //     child: const Row(
+              //       children: [
+              //         Expanded(
+              //           child: TextField(
+              //             decoration: InputDecoration(
+              //               border: InputBorder.none,
+              //               hintText: "Search Coin",
+              //             ),
+              //           ),
+              //         ),
+              //         Icon(Icons.search, color: Colors.grey),
+              //       ],
+              //     ),
+              //   ),
             ],
           ),
           // Search Bar

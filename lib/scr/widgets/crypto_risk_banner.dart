@@ -38,13 +38,13 @@ class CryptoRiskScannerBanner extends StatelessWidget {
           ),
 
           // Content Layer
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 90),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 90),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   "Crypto Risk Scanner",
                   style: TextStyle(
                     fontSize: 25,
@@ -52,15 +52,15 @@ class CryptoRiskScannerBanner extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 10),
-                const Text(
+                SizedBox(height: 10),
+                Text(
                   "CoinPeek helps you uncover hidden and potential risks \nin any cryptocurrency",
                   style: TextStyle(
                     fontSize: 15,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 // ElevatedButton(
                 //   onPressed: () {},
                 //   style: ElevatedButton.styleFrom(
