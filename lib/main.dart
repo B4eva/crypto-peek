@@ -1,9 +1,11 @@
 import 'package:crypto_tracker/scr/pages/home_page.dart';
+import 'package:crypto_tracker/scr/pages/revamp/revamp.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -24,8 +26,8 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.blue, // Customize primary color
       ),
-      home: const Scaffold(
-        body: HomePage(),
+      home:  Scaffold(
+        body: CryptoRiskScanner(),
       ),
     );
   }

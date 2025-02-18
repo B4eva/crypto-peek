@@ -197,7 +197,7 @@ class HomeScreenContent extends ConsumerWidget {
                                                 ),
                                               ),
                                               Text(
-                                                coin.priceChangePercentage24H
+                                                coin.priceChangePercentage24h
                                                     .toStringAsFixed(2),
                                                 style: TextStyle(
                                                   fontSize: 10,

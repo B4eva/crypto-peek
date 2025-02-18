@@ -9,7 +9,7 @@ class ApiService {
   Future<ApiResult<List<Coin>>> fetchCoins() async {
     try {
       final response = await http.get(Uri.parse(
-          '${baseUrl}markets?vs_currency=eur&order=market_cap_desc&per_page=500&page=1&sparkline=false'));
+          '${baseUrl}/markets?vs_currency=usd&order=market_cap_desc&per_page=500&page=1&sparkline=true&price_change_percentage=24h,7d,30d'));
 
       if (response.statusCode == 200) {
         List<Coin> coins = coinFromJson(response.body);

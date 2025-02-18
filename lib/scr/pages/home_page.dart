@@ -99,162 +99,179 @@ class Footer extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
-    return Container(
-      // Assuming you have a footer background color
-      padding: const EdgeInsets.all(20.0),
-      child: screenSize.width < 600
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFEDA03),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Text(
-                        "CP",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+     EdgeInsets padding;
+  if (screenSize.width < 400) {
+    padding = const EdgeInsets.only(left: 8); // Small screens
+  } else if (screenSize.width < 600) {
+    padding = const EdgeInsets.all(16); // Medium screens
+  } else if (screenSize.width < 900) {
+    padding = const EdgeInsets.all(24); // Large screens
+  } else {
+    padding = const EdgeInsets.symmetric(horizontal: 100, vertical: 16); // Very large screens
+  }
+    
+    return Padding(
+      padding: padding,
+      child: Container(
+        // Assuming you have a footer background color
+        padding: const EdgeInsets.all(20.0),
+        child: screenSize.width < 600
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+
+                    const SizedBox(height: 20),
+                  const Text(
+                    'Get in Touch',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildContactForm(),
+                          const SizedBox(height: 50),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEDA03),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          "CP",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      "CoinPeek",
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                      const SizedBox(width: 8),
+                      const Text(
+                        "CoinPeek",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Email: ttbumah@gmail.com',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF626262)),
-                ),
-                const Text(
-                  'Phone: +44 7375 937236',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF626262)),
-                ),
-                const Text(
-                  'Address: 123 Crypto St, Blockchain City',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF626262)),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Get in Touch',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                _buildContactForm(),
-                const SizedBox(
-                  height: 40,
-                )
-              ],
-            )
-          : Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Contact information
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8.0),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFEDA03),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              "CP",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Email: ttbumah@gmail.com',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF626262)),
+                  ),
+                  const Text(
+                    'Phone: +44 7375 937236',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF626262)),
+                  ),
+                  const Text(
+                    'Address: 123 Crypto St, Blockchain City',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF626262)),
+                  ),
+                
+                  const SizedBox(
+                    height: 40,
+                  )
+                ],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Contact information
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                             //   color: const Color(0xFFFEDA03),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                "CP",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            "CoinPeek",
-                            style: TextStyle(
-                              fontSize: 23,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                            const SizedBox(width: 8),
+                            const Text(
+                              "CoinPeek",
+                              style: TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Email: ttbumah@gmail.com',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF626262)),
-                      ),
-                      const Text(
-                        'Phone: +44 7375 937236',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF626262)),
-                      ),
-                      const Text(
-                        'Address: 123 Crypto St, Blockchain City',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF626262)),
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Email: ttbumah@gmail.com',
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF626262)),
+                        ),
+                        const Text(
+                          'Phone: +44 7375 937236',
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF626262)),
+                        ),
+                        const Text(
+                          'Address: 123 Crypto St, Blockchain City',
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF626262)),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 20), // Space between two columns
-                // Contact form
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Get in Touch',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 20),
-                      _buildContactForm(),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                    ],
+                  const SizedBox(width: 20), // Space between two columns
+                  // Contact form
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Get in Touch',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildContactForm(),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+      ),
     );
   }
 
@@ -301,7 +318,7 @@ class Footer extends StatelessWidget {
           ),
           maxLines: 3,
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
@@ -358,35 +375,36 @@ class ResponsiveHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(
                 width: 20,
               ),
-              // if (!isMobile )
-              //   Container(
-              //     width: 350,
-              //     margin: const EdgeInsets.symmetric(horizontal: 16.0),
-              //     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              //     decoration: BoxDecoration(
-              //       color: const Color(0xFFF6F6F6),
-              //       borderRadius: BorderRadius.circular(12),
-              //     ),
-              //     child: const Row(
-              //       children: [
-              //         Expanded(
-              //           child: TextField(
-              //             decoration: InputDecoration(
-              //               border: InputBorder.none,
-              //               hintText: "Search Coin",
-              //             ),
-              //           ),
-              //         ),
-              //         Icon(Icons.search, color: Colors.grey),
-              //       ],
-              //     ),
-              //   ),
+              if (!isMobile )
+                Container(
+                  width: 350,
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF132A46),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                                              style: TextStyle(fontSize: 12, color: Colors.white),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Search Coin",
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.search, color: Colors.grey),
+                    ],
+                  ),
+                ),
             ],
           ),
           // Search Bar
@@ -431,7 +449,7 @@ class ResponsiveHeader extends StatelessWidget {
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                  backgroundColor: Color(0xFF315177),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
