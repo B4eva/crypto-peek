@@ -59,13 +59,17 @@ class CoinsProvider extends ChangeNotifier {
     return _likedCoins.any((coin) => coin.id == coinId);
   }
 
-  void searchCoins(String query) {
-    if (query.isEmpty) {
-      _filteredCoins = []; // Reset filtered coins if the query is empty
+  TextEditingController _controller = TextEditingController();
+
+  TextEditingController get controller => _controller;
+
+  void searchCoins() {
+    if (_controller.text.isEmpty) {
+      _filteredCoins = _coins; // Reset filtered coins if the query is empty
     } else {
       _filteredCoins = _coins
           .where(
-              (coin) => coin.name.toLowerCase().contains(query.toLowerCase()))
+              (coin) => coin.name.toLowerCase().contains(controller.text.toLowerCase()))
           .toList();
     }
     notifyListeners(); // Notify listeners to update the UI

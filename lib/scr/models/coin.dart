@@ -165,6 +165,7 @@ class Coin {
       marketCap / totalVolume > 100,  // Whale manipulation resistance
     ];
   }
+
 }
 
 class Roi {

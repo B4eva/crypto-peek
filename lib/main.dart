@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         ),
         primarySwatch: Colors.blue, // Customize primary color
       ),
-      home:  Scaffold(
+      home:  const Scaffold(
         body: CryptoRiskScanner(),
       ),
     );
