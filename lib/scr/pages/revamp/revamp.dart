@@ -66,7 +66,7 @@ TextEditingController controller = TextEditingController();
                                 scaffoldKey.currentState?.openEndDrawer();
                               },
                             ),
-                          _buildHeader(),
+                          _buildHeader(context),
                           const SizedBox(height: 12),
                           const FixedSearchBar(),
                           const SizedBox(height: 12),
@@ -136,43 +136,74 @@ TextEditingController controller = TextEditingController();
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      child: const Column(
-        children: [
-          Text(
-            'Find Crypto Risks ',
-            style: TextStyle(
-              color: Color(0xFF2752E7),
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          Text(
-            '& Gems Early',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(
-            width: 423,
-            child: Text(
-              'CoinPeek is a crypto scorecard that helps you uncover hidden risks and spot high-potential coins before it is too late.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+ Widget _buildHeader(BuildContext context) {
+  // Get the screen width to make responsive adjustments
+  double screenWidth = MediaQuery.of(context).size.width;
+  
+  // Define responsive font sizes
+  double titleFontSize;
+  double subtitleFontSize;
+  double containerWidth;
+  EdgeInsets padding;
+  
+  // Adjust sizes based on screen width
+  if (screenWidth < 400) {
+    // Mobile
+    titleFontSize = 24;
+    subtitleFontSize = 10;
+    containerWidth = screenWidth * 0.9;
+    padding = const EdgeInsets.all(16);
+  } else if (screenWidth < 600) {
+    // Small tablet
+    titleFontSize = 28;
+    subtitleFontSize = 10;
+    containerWidth = screenWidth * 0.8;
+    padding = const EdgeInsets.all(20);
+  } else if (screenWidth < 900) {
+    // Large tablet
+    titleFontSize = 30;
+    subtitleFontSize = 11;
+    containerWidth = 400;
+    padding = const EdgeInsets.all(24);
+  } else {
+    // Desktop
+    titleFontSize = 32;
+    subtitleFontSize = 12;
+    containerWidth = 450;
+    padding = const EdgeInsets.all(24);
   }
+
+  return Container(
+    padding: padding,
+    child: Column(
+      children: [
+        Text(
+          'Analyze Crypto Without Being an Expert',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: const Color(0xFF2752E7),
+            fontSize: titleFontSize,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: containerWidth,
+          child: Text(
+            'Uncover market trends, spot risks, and discover hidden gems easily with simple, smart insights — no technical knowledge needed',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: const Color(0xFFFFFFFF),
+              fontSize: subtitleFontSize,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 }
 // Persistent Header Delegate for View Toggle with Animated Search
 class ViewToggleHeaderDelegate extends SliverPersistentHeaderDelegate {

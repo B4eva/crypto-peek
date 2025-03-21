@@ -47,7 +47,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   controller: _searchController,
                   onChanged: (value) {
-                    ref.read(coinsProvider).searchCoins(value);
+                    ref.read(coinsProvider).searchCoins();
                   },
                   decoration: InputDecoration(
                     hintText: 'Search...',
