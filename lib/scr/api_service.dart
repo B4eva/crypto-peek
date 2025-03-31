@@ -1,23 +1,37 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto_tracker/scr/models/coin.dart';
 import 'package:http/http.dart' as http;
 
+// Updated ApiService with improved error handling
 class ApiService {
   final String baseUrl = 'https://api.coingecko.com/api/v3/coins/';
 
   Future<ApiResult<List<Coin>>> fetchCoins() async {
+    print('======================> Fetching coins...');
+    // Check if the internet connection is available
     try {
-      final response = await http.get(Uri.parse(
-          '${baseUrl}/markets?vs_currency=usd&order=market_cap_desc&per_page=500&page=1&sparkline=true&price_change_percentage=24h,7d,30d'));
+      final response = await http.get(
+        Uri.parse('${baseUrl}markets?vs_currency=usd&order=market_cap_desc&per_page=00&page=1&sparkline=true&price_change_percentage=24h,7d,30d'),
+        headers: {
+          'Accept': 'application/json',
+          // Add an API key if you have one
+          // 'x-cg-pro-api-key': 'YOUR_API_KEY',
+        },
+      ).timeout(const Duration(seconds: 15)); // Add timeout for reliability
 
       if (response.statusCode == 200) {
         List<Coin> coins = coinFromJson(response.body);
         return ApiResult(data: coins);
+      } else if (response.statusCode == 429) {
+        return ApiResult(error: 'Rate limit exceeded. Please try again later.');
       } else {
         return ApiResult(
-            error: 'Failed to fetch coins: ${response.statusCode}');
+            error: 'Failed to fetch coins: ${response.statusCode}. ${response.body}');
       }
+    } on TimeoutException {
+      return ApiResult(error: 'Connection timed out. Please check your internet and try again.');
     } catch (e) {
       return ApiResult(error: 'Error: $e');
     }
@@ -25,31 +39,48 @@ class ApiService {
 
   Future<ApiResult<CoinDetail>> fetchCoinDetails(String id) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl$id'));
+      final response = await http.get(
+        Uri.parse('$baseUrl$id'),
+        headers: {
+          'Accept': 'application/json',
+        },
+      ).timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         return ApiResult(data: CoinDetail.fromJson(data));
+      } else if (response.statusCode == 429) {
+        return ApiResult(error: 'Rate limit exceeded. Please try again later.');
       } else {
         return ApiResult(
             error: 'Failed to fetch coin details: ${response.statusCode}');
       }
+    } on TimeoutException {
+      return ApiResult(error: 'Connection timed out. Please check your internet and try again.');
     } catch (e) {
       return ApiResult(error: 'Error: $e');
     }
   }
 
-  Future<List<double>> fetchHistoricalData(String coinId) async {
-    final response = await http.get(
-        Uri.parse('$baseUrl/$coinId/market_chart?vs_currency=usd&days=30'));
+  Future<ApiResult<List<double>>> fetchHistoricalData(String coinId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl$coinId/market_chart?vs_currency=usd&days=30'),
+        headers: {
+          'Accept': 'application/json',
+        },
+      ).timeout(const Duration(seconds: 15));
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      List<double> prices =
-          (data['prices'] as List).map((item) => item[1] as double).toList();
-      return prices;
-    } else {
-      throw Exception('Failed to load historical data');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        List<double> prices =
+            (data['prices'] as List).map((item) => item[1] as double).toList();
+        return ApiResult(data: prices);
+      } else {
+        return ApiResult(error: 'Failed to load historical data: ${response.statusCode}');
+      }
+    } catch (e) {
+      return ApiResult(error: 'Error: $e');
     }
   }
 }
@@ -82,10 +113,9 @@ class CoinDetail {
     return CoinDetail(
       id: json['id'],
       name: json['name'],
-      description: json['description']
-          ['en'], // Assuming you want the English description
-      marketCap: json['market_data']['market_cap']['eur'],
-      totalSupply: json['market_data']['total_supply'],
+      description: json['description']['en'],
+      marketCap: json['market_data']['market_cap']['usd'] ?? 0,
+      totalSupply: json['market_data']['total_supply'] ?? 0.0,
       image: json['image']['large'],
     );
   }

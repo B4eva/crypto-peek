@@ -27,7 +27,7 @@ class _CoinDetailScreenState extends ConsumerState<CoinDetailScreen> {
   void initState() {
     super.initState();
     _fetchCoinDetails();
-    _historicalData = ApiService().fetchHistoricalData(widget.coinId);
+   // _historicalData = ApiService().fetchHistoricalData(widget.coinId);
   }
 
   Future<void> _fetchCoinDetails() async {
