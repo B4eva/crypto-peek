@@ -1,24 +1,27 @@
 
 
 import 'package:crypto_tracker/scr/models/coin.dart';
-import 'package:crypto_tracker/scr/pages/home_page.dart';
+
 import 'package:crypto_tracker/scr/providers/coins_provider.dart';
+import 'package:crypto_tracker/scr/providers/navigation_provider.dart';
 import 'package:crypto_tracker/scr/widgets/asset_card.dart';
 import 'package:crypto_tracker/scr/widgets/assets_grid_view.dart';
-import 'package:crypto_tracker/scr/widgets/assets_table_view.dart';
+
 import 'package:crypto_tracker/scr/widgets/drawer_mobile.dart';
+import 'package:crypto_tracker/scr/widgets/footer.dart';
+import 'package:crypto_tracker/scr/widgets/gradient_text.dart';
 import 'package:crypto_tracker/scr/widgets/header_mobile.dart';
 import 'package:crypto_tracker/scr/widgets/header_widget.dart';
 import 'package:crypto_tracker/scr/widgets/search.dart';
+import 'package:crypto_tracker/scr/widgets/sliver_table_view.dart';
+import 'package:crypto_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// Main CryptoRiskScanner Widget
 class CryptoRiskScanner extends ConsumerStatefulWidget {
   const CryptoRiskScanner({Key? key}) : super(key: key);
   
   @override
-  _CryptoRiskScannerState createState() => _CryptoRiskScannerState();
+  ConsumerState<CryptoRiskScanner> createState() => _CryptoRiskScannerState();
 }
 
 class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
@@ -26,13 +29,29 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
   final double maxContentWidth = 1300.0;
   final double kMinDesktopWidth = 600.0;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final ScrollController _scrollController = ScrollController();
 
-TextEditingController controller = TextEditingController();
+  TextEditingController controller = TextEditingController();
+  bool isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Calculate section positions after layout
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final navController = ref.read(navigationControllerProvider);
+      navController.updateSectionPositions(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final coinProvider = ref.watch(coinsProvider);
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    
+    // Get the navigation controller
+    final navController = ref.watch(navigationControllerProvider);
+    final currentSection = navController.currentSection;
     
     return LayoutBuilder(
       builder: (context, constraints) => Scaffold(
@@ -50,25 +69,63 @@ TextEditingController controller = TextEditingController();
                   horizontal: size.width >= kMinDesktopWidth ? 24 : 12
                 ),
                 child: CustomScrollView(
+                  controller: navController.scrollController, // Use the controller from navigationController
                   slivers: [
                     // Header Section
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
                           if (size.width >= kMinDesktopWidth)
-                            const ResponsiveHeader()
+                            _buildDesktopHeader(currentSection, navController)
                           else
                             HeaderMobile(
                               onLogoTap: () {
-                                // Handle logo tap
+                                navController.scrollToSection(AppSection.home);
                               },
                               onMenuTap: () {
                                 scaffoldKey.currentState?.openEndDrawer();
                               },
                             ),
+                          
+                          // Home section with key
+                          SizedBox(key: navController.homeKey, height: 1), // Invisible marker for home section
                           _buildHeader(context),
                           const SizedBox(height: 12),
-                          const FixedSearchBar(),
+                      
+                          Container(
+                            width: 350,
+                            margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF132A46),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: coinProvider.controller,
+                                    style: TextStyle(fontSize: 12, color: Colors.white),
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: "Search Coin",
+                                    ),
+                                    onChanged: (value) {
+                                      if (value.isNotEmpty) {
+                                        isSearching = true;
+                                        coinProvider.searchCoins();
+                                      } else {
+                                        isSearching = false;
+                                        coinProvider.clearSearch();
+                                      }
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                                Icon(Icons.search, color: Colors.grey),
+                              ],
+                            ),
+                          ),
                           const SizedBox(height: 12),
                         ],
                       ),
@@ -78,7 +135,7 @@ TextEditingController controller = TextEditingController();
                     SliverPersistentHeader(
                       pinned: true,
                       delegate: ViewToggleHeaderDelegate(
-                        scrollController: _scrollController,
+                        scrollController: navController.scrollController,
                         isGridView: isGridView,
                         onViewToggle: (bool isGrid) {
                           setState(() => isGridView = isGrid);
@@ -101,29 +158,43 @@ TextEditingController controller = TextEditingController();
                     else
                       isGridView
                           ? SliverGridViewWidget(width: constraints.maxWidth)
-                          : SliverTableViewWidget(
+                          :             // Calculator Section
+                   SliverTableViewWidget(
                               isVeryNarrow: constraints.maxWidth < 200,
                               width: constraints.maxWidth,
                             ),
 
-                    // Footer Section
-                   const  SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                           SizedBox(height: 40),
-                           Footer(),
-                           SizedBox(height: 30),
-                           Divider(),
-                           SizedBox(height: 30),
-                           Text(
-                            '© 2025. All rights reserved.',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFFA0A3A9),
+               // Footer Section (Contact)
+                    SliverToBoxAdapter(
+                      child: Container(
+                        key: navController.contactKey, // Important: Key for contact section
+                        child: Column(
+                          children: [
+                            SizedBox(height: 40),
+                            Text(
+                              "Contact Us",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 30),
-                        ],
+                            SizedBox(height: 20),
+                            // Add contact form or content here
+                            const Footer(),
+                            SizedBox(height: 30),
+                            Divider(),
+                            SizedBox(height: 30),
+                            Text(
+                              '© 2025. All rights reserved.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFFA0A3A9),
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -136,75 +207,210 @@ TextEditingController controller = TextEditingController();
     );
   }
 
- Widget _buildHeader(BuildContext context) {
-  // Get the screen width to make responsive adjustments
-  double screenWidth = MediaQuery.of(context).size.width;
-  
-  // Define responsive font sizes
-  double titleFontSize;
-  double subtitleFontSize;
-  double containerWidth;
-  EdgeInsets padding;
-  
-  // Adjust sizes based on screen width
-  if (screenWidth < 400) {
-    // Mobile
-    titleFontSize = 24;
-    subtitleFontSize = 10;
-    containerWidth = screenWidth * 0.9;
-    padding = const EdgeInsets.all(16);
-  } else if (screenWidth < 600) {
-    // Small tablet
-    titleFontSize = 28;
-    subtitleFontSize = 10;
-    containerWidth = screenWidth * 0.8;
-    padding = const EdgeInsets.all(20);
-  } else if (screenWidth < 900) {
-    // Large tablet
-    titleFontSize = 30;
-    subtitleFontSize = 11;
-    containerWidth = 400;
-    padding = const EdgeInsets.all(24);
-  } else {
-    // Desktop
-    titleFontSize = 32;
-    subtitleFontSize = 12;
-    containerWidth = 450;
-    padding = const EdgeInsets.all(24);
+  // Desktop header with navigation
+  Widget _buildDesktopHeader(AppSection currentSection, NavigationController navController) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Logo and Brand Name
+          Row(
+            children: [
+           //   Image.asset('assets/images/logo-transparent.png',  height: 100, width: 200, color: Colors.white,),
+              // Container(
+              //   padding: const EdgeInsets.all(8.0),
+              //   decoration: BoxDecoration(
+              //     color: const Color(0xFFFEDA03),
+              //     borderRadius: BorderRadius.circular(8),
+              //   ),
+              //   child: const Text(
+              //     "CP",
+              //     style: TextStyle(
+              //       fontSize: 20,
+              //       fontWeight: FontWeight.bold,
+              //       color: Colors.black,
+              //     ),
+              //   ),
+              // ),
+             
+             
+              // const SizedBox(width: 8),
+             
+              const Text(
+                "Coin  Peek",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              
+              
+              // const SizedBox(width: 20),
+            ],
+          ),
+          
+          // Navigation Items
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () => navController.scrollToSection(AppSection.home),
+                child: Text(
+                  "Home",
+                  style: TextStyle(
+                    color: currentSection == AppSection.home ? Colors.white : Colors.grey,
+                    fontSize: 15,
+                    fontWeight: currentSection == AppSection.home ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              TextButton(
+                onPressed: () => navController.scrollToSection(AppSection.calculator),
+                child: currentSection == AppSection.calculator 
+                  ? const GradientText(
+                    text: "Calculator",
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.pink,
+                        Colors.purple,
+                        Colors.orange,
+                        Colors.yellow,
+                      ],
+                    ),
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                  : Text(
+                    "Calculator",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15,
+                    ),
+                  ),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: currentSection == AppSection.contact 
+                    ? Color(0xFF4183D7) // Brighter blue when active
+                    : Color(0xFF315177),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                ),
+                onPressed: () => navController.scrollToSection(AppSection.contact),
+                child: const Text(
+                  "Contact",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
-  return Container(
-    padding: padding,
-    child: Column(
-      children: [
-        Text(
-          'Analyze Crypto Without Being an Expert',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: const Color(0xFF2752E7),
-            fontSize: titleFontSize,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: containerWidth,
-          child: Text(
-            'Uncover market trends, spot risks, and discover hidden gems easily with simple, smart insights — no technical knowledge needed',
+  Widget _buildHeader(BuildContext context) {
+    // Get the screen width to make responsive adjustments
+    double screenWidth = MediaQuery.of(context).size.width;
+    
+    // Define responsive font sizes
+    double titleFontSize;
+    double subtitleFontSize;
+    double containerWidth;
+    EdgeInsets padding;
+    
+    // Adjust sizes based on screen width
+    if (screenWidth < 450) {
+      // Mobile
+      titleFontSize = 24;
+      subtitleFontSize = 13;
+      containerWidth = screenWidth * 0.9;
+      padding = const EdgeInsets.all(16);
+    } else if (screenWidth < 600) {
+      // Small tablet
+      titleFontSize = 28;
+      subtitleFontSize = 14;
+      containerWidth = screenWidth * 0.8;
+      padding = const EdgeInsets.all(20);
+    } else if (screenWidth < 900) {
+      // Large tablet
+      titleFontSize = 30;
+      subtitleFontSize = 16;
+      containerWidth = 400;
+      padding = const EdgeInsets.all(24);
+    } else {
+      // Desktop
+      titleFontSize = 32;
+      subtitleFontSize = 16;
+      containerWidth = 450;
+      padding = const EdgeInsets.all(24);
+    }
+
+    return Container(
+      padding: padding,
+      child: Column(
+        children: [
+          RichText(
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: const Color(0xFFFFFFFF),
-              fontSize: subtitleFontSize,
-              fontWeight: FontWeight.w400,
+            text: TextSpan(
+              style: TextStyle(
+                fontSize: 24.0,
+              ),
+              children: [
+                TextSpan(
+                  text: "See Crypto ",
+                  style: TextStyle(
+                    color: const Color(0xFF2752E7),
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                TextSpan(
+                  text: "Differently",
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: titleFontSize,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 8),
+          SizedBox(
+            width: containerWidth,
+            child: Text(
+              'CoinPeek helps you understand what could go wrong with any token — so you can make smarter decisions and avoid costly losses.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: const Color(0xFFFFFFFF),
+                fontSize: subtitleFontSize,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
 }
+
+
+
 // Persistent Header Delegate for View Toggle with Animated Search
 class ViewToggleHeaderDelegate extends SliverPersistentHeaderDelegate {
   final bool isGridView;
@@ -287,13 +493,17 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider);
                                 fontSize: 12,
                               ),
                             ),
-                               onChanged: (value) {
-                            if (value.isNotEmpty) {
-                           
-                              coinProvider.searchCoins();
-                            } 
-                           
-                          },
+                         onChanged: (value) {
+  print("Searching for revam main search=============>: $value");
+  if (value.isNotEmpty) {
+    // isSearching = true;
+    coinProvider.searchCoins();
+  } else {
+    // isSearching = false;
+    coinProvider.clearSearch();
+  }
+ // setState(() {});
+},
                           ),
                         ),
                         const Icon(Icons.search, color: Colors.grey),
@@ -302,6 +512,8 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider);
                   ),
                 ),
               ),
+            
+            
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 decoration: const BoxDecoration(

@@ -9,17 +9,17 @@ class SiteLogo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        color: const Color(0xFFFEDA03),
+        //color: const Color(0xFFFEDA03),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Text(
-        "CP",
-        style: TextStyle(
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-      ),
+      child:   const Text(
+                "Coin  Peek",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
     );
   }
 }

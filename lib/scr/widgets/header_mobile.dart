@@ -16,29 +16,7 @@ class HeaderMobile extends StatelessWidget {
       child: Row(
         children: [
           SiteLogo(tap: onLogoTap!),
-          Container(
-            width: 170,
-            margin: const EdgeInsets.symmetric(horizontal: 16.0),
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFF132A46),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(fontSize: 12, color: Colors.white),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Search Coin",
-                    ),
-                  ),
-                ),
-                Icon(Icons.search, color: Colors.grey),
-              ],
-            ),
-          ),
+
           const Spacer(),
           IconButton(
             onPressed: onMenuTap,

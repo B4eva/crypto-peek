@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 List<Coin> coinFromJson(String str) =>
     List<Coin>.from(json.decode(str).map((x) => Coin.fromJson(x)));
 
@@ -207,4 +209,18 @@ class EnumValues<T> {
     reverseMap = map.map((k, v) => MapEntry(v, k));
     return reverseMap;
   }
+}
+
+
+
+
+
+class MetricScore {
+  final int score;
+  final Color color;
+
+  MetricScore({
+    required this.score,
+    required this.color,
+  });
 }

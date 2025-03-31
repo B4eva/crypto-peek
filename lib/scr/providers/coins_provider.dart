@@ -59,11 +59,14 @@ class CoinsProvider extends ChangeNotifier {
     return _likedCoins.any((coin) => coin.id == coinId);
   }
 
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   TextEditingController get controller => _controller;
 
   void searchCoins() {
+       String value = _controller.text;
+       print("Searching for in Provider=============>: $value");
+ 
     if (_controller.text.isEmpty) {
       _filteredCoins = _coins; // Reset filtered coins if the query is empty
     } else {
@@ -74,4 +77,12 @@ class CoinsProvider extends ChangeNotifier {
     }
     notifyListeners(); // Notify listeners to update the UI
   }
+
+
+ void clearSearch() {
+  _filteredCoins = [];
+  _controller.clear();
+  notifyListeners();
+}
+
 }

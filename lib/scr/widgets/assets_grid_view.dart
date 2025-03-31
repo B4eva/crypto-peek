@@ -271,14 +271,14 @@ class SliverGridViewWidget extends ConsumerWidget {
         : <Coin>[];
 
     // Adjust cross axis count based on width
-    int crossAxisCount = width < 400 ? 2 : width < 600 ? 2 : width < 900 ? 3 : 4;
+int crossAxisCount = (width < 500) ? 1 : (width < 700 ? 2 : (width < 1200 ? 3 : 4));
     
     // More adaptive aspect ratio based on screen size and content
     // Lower aspect ratio means taller cards
     double aspectRatio;
-    if (width < 400) {
-      aspectRatio = 0.65; // Even taller cards on mobile
-    } else if (width < 600) {
+    if (width < 500) {
+      aspectRatio =1.0; // Even taller cards on mobile
+    } else if (width < 700) {
       aspectRatio = 0.70;
     } else if (width < 900) {
       aspectRatio = 0.70;

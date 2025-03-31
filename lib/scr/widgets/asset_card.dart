@@ -1,5 +1,20 @@
 import 'package:crypto_tracker/scr/models/coin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+
+// Weights configuration for the scoring system
+class MetricWeights {
+  static const Map<String, double> weights = {
+    'Age': 0.10,          // 10%
+    'Dominance': 0.10,    // 10%
+    'Adoption': 0.15,     // 15%
+    'Loyalty': 0.15,      // 15%
+    'Momentum': 0.15,     // 15%
+    'Crash': 0.10,        // 10%
+    'Liquidity': 0.15,    // 15%
+    'Manipulation': 0.10, // 10%
+  };
+}
 
 class AssetCard extends StatelessWidget {
   final Coin coinData;
@@ -23,10 +38,10 @@ class AssetCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCardHeader(coinData, isVeryNarrow),
+                _buildCardHeader(coinData, isVeryNarrow, context),
                 SizedBox(height: isVeryNarrow ? 8 : 12),
                 _buildPriceSection(coinData, isVeryNarrow),
-                Divider(thickness: 0.2,),
+                const Divider(thickness: 0.2,),
                 SizedBox(height: isVeryNarrow ? 8 : 12),
                 buildMetricsDisplay(coinData, isVeryNarrow),
               ],
@@ -37,7 +52,15 @@ class AssetCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCardHeader(Coin coinData, bool isVeryNarrow) {
+  Widget _buildCardHeader(Coin coinData, bool isVeryNarrow, BuildContext context) {
+    // Calculate the score using the metrics display logic
+    final metricsDisplay = MetricsDisplay(coin: coinData, isVeryNarrow: isVeryNarrow);
+    final metrics = metricsDisplay._calculateMetricScores();
+    final score = _calculateFinalScore(metrics);
+    
+    // Create tooltip content
+    final tooltipContent = _buildScoreTooltipContent(metrics);
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -75,7 +98,7 @@ class AssetCard extends StatelessWidget {
                         ),
                         Text(
                           '(${(coinData.symbol).toUpperCase()})',
-                          style: const TextStyle(color: Color(0xFFFFFFFF), fontSize: 12, fontWeight: FontWeight.w400),
+                          style: const TextStyle(color: Color(0xFFFFFFFF), fontSize: 10, fontWeight: FontWeight.w400),
                         ),
                       ],
                     ),
@@ -85,13 +108,86 @@ class AssetCard extends StatelessWidget {
             ],
           ),
         ),
-        IconButton(
-          icon: Icon(Icons.share, size: isVeryNarrow ? 14 : 16,),
-          onPressed: () {},
-          color: Colors.grey[400],
+        SizedBox(width: isVeryNarrow ? 8 : 12),
+        ScoreTooltip(
+          message: tooltipContent,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: _getScoreColor(score).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: _getScoreColor(score).withOpacity(0.4), width: 1),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Score: ${score.toStringAsFixed(1)}',
+                  style: TextStyle(
+                    color: _getScoreColor(score),
+                    fontSize: isVeryNarrow ? 10 : 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(width: 4),
+                Icon(
+                  Icons.info_outline,
+                  color: _getScoreColor(score),
+                  size: isVeryNarrow ? 10 : 12,
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
+  }
+
+  // Build tooltip content explaining the score calculation
+  String _buildScoreTooltipContent(Map<String, MetricScore> metrics) {
+    final StringBuffer buffer = StringBuffer();
+    buffer.writeln('Score Breakdown:');
+    buffer.writeln('');
+    
+    // Calculate weighted scores for each metric
+    metrics.forEach((metric, score) {
+      final weight = MetricWeights.weights[metric]! * 100;
+      final weightedScore = score.score * MetricWeights.weights[metric]!;
+      final rating = score.score == 100 ? 'High' : (score.score == 50 ? 'Medium' : 'Low');
+      
+      buffer.writeln('$metric (${weight.toStringAsFixed(0)}%):');
+      buffer.writeln('  Rating: $rating (${score.score})');
+      buffer.writeln('  Weighted: ${weightedScore.toStringAsFixed(1)}');
+      buffer.writeln('');
+    });
+    
+    // Add total score
+    double totalScore = 0;
+    metrics.forEach((metric, score) {
+      totalScore += score.score * MetricWeights.weights[metric]!;
+    });
+    
+    buffer.writeln('Final Score: ${totalScore.toStringAsFixed(1)}/100');
+    
+    return buffer.toString();
+  }
+
+  // Calculate the final score based on metrics and weights
+  double _calculateFinalScore(Map<String, MetricScore> metrics) {
+    double finalScore = 0.0;
+    metrics.forEach((metric, metricScore) {
+      finalScore += metricScore.score * MetricWeights.weights[metric]!;
+    });
+    return finalScore;
+  }
+
+  // Get color based on the score
+  Color _getScoreColor(double score) {
+    if (score >= 80) return Colors.green;
+    if (score >= 60) return Colors.lightGreen;
+    if (score >= 40) return Colors.amber;
+    if (score >= 20) return Colors.orange;
+    return Colors.red;
   }
 
   Widget _buildPriceSection(Coin coinData, bool isVeryNarrow) {
@@ -150,7 +246,7 @@ class AssetCard extends StatelessWidget {
             ),
           ],
         ),
-        SizedBox(width: 4,),
+        const SizedBox(width: 4,),
         Row(
           children: [
             Container(
@@ -162,10 +258,10 @@ class AssetCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   isPriceUp ? Container(
-                    padding: EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isPriceUp ? Color(0xFF00DD23) : Color(0xFFDD0000),
+                      color: isPriceUp ? const Color(0xFF00DD23) : const Color(0xFFDD0000),
                     ),
                     child: Icon(
                       Icons.arrow_upward_sharp,
@@ -173,10 +269,10 @@ class AssetCard extends StatelessWidget {
                       size: isVeryNarrow ? 8 : 10,
                     ),
                   ) : Container(
-                    padding: EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isPriceUp ? Color(0xFF00DD23) : Color(0xFFDD0000),
+                      color: isPriceUp ? const Color(0xFF00DD23) : const Color(0xFFDD0000),
                     ),
                     child: Icon(
                       Icons.arrow_downward_sharp,
@@ -184,12 +280,12 @@ class AssetCard extends StatelessWidget {
                       size: isVeryNarrow ? 8 : 10,
                     ),
                   ),
-                  SizedBox(width: 4,),
+                  const SizedBox(width: 4,),
                   Text(
                     '${priceChange.toStringAsFixed(2)}%',
                  
                     style: TextStyle(
-                      color: isPriceUp ? Color(0xFF00DD23) : Color(0xFFDD0000),
+                      color: isPriceUp ? const Color(0xFF00DD23) : const Color(0xFFDD0000),
                       fontSize: isVeryNarrow ? 8 : 10,
                     ),
                   ),
@@ -200,7 +296,7 @@ class AssetCard extends StatelessWidget {
             Text(
               '(Last 24hrs)',
               style: TextStyle(
-                color: Color(0xFFACACAC),
+                color: const Color(0xFFACACAC),
                 fontSize: isVeryNarrow ? 8 : 10,
                 fontWeight: FontWeight.w400
               ),
@@ -208,6 +304,182 @@ class AssetCard extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+// Custom tooltip widget that shows on hover/click and dismisses appropriately
+class ScoreTooltip extends StatefulWidget {
+  final Widget child;
+  final String message;
+
+  const ScoreTooltip({
+    Key? key,
+    required this.child,
+    required this.message,
+  }) : super(key: key);
+
+  @override
+  State<ScoreTooltip> createState() => _ScoreTooltipState();
+}
+
+class _ScoreTooltipState extends State<ScoreTooltip> {
+  bool _isTooltipVisible = false;
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+  bool _isHovering = false;
+  bool _isLocked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Add global click listener to dismiss tooltip when clicking elsewhere
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      GestureBinding.instance.pointerRouter.addGlobalRoute(_handleGlobalPointerEvent);
+    });
+  }
+
+  @override
+  void dispose() {
+    _hideTooltip();
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(_handleGlobalPointerEvent);
+    super.dispose();
+  }
+
+  // Handle clicks outside the tooltip
+  void _handleGlobalPointerEvent(PointerEvent event) {
+    if (event is PointerDownEvent && _isTooltipVisible) {
+      final RenderBox? box = context.findRenderObject() as RenderBox?;
+      if (box == null) return;
+      
+      final position = box.localToGlobal(Offset.zero);
+      final size = box.size;
+      final Rect widgetRect = Rect.fromLTWH(
+        position.dx,
+        position.dy,
+        size.width,
+        size.height
+      );
+      
+      if (!widgetRect.contains(event.position)) {
+        _hideTooltip();
+        setState(() {
+          _isLocked = false;
+        });
+      }
+    }
+  }
+
+  void _showTooltip() {
+    if (_overlayEntry != null) return;
+    
+    _overlayEntry = _createOverlayEntry();
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() {
+      _isTooltipVisible = true;
+    });
+  }
+
+  void _hideTooltip() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    setState(() {
+      _isTooltipVisible = false;
+    });
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: 250,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: const Offset(0, 30),
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E3A5C),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: widget.message.split('\n').map((line) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Text(
+                      line,
+                      style: TextStyle(
+                        color: line.contains('Final Score:') ? Colors.white : 
+                               line.contains('Rating:') ? Colors.yellow : 
+                               line.contains('Weighted:') ? Colors.lightBlue : 
+                               line.endsWith(':') ? Colors.white : Colors.grey[300],
+                        fontSize: line.contains('Score Breakdown:') ? 14 : 12,
+                        fontWeight: line.contains('Score Breakdown:') || line.contains('Final Score:') 
+                                   ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: MouseRegion(
+        onEnter: (_) {
+          setState(() {
+            _isHovering = true;
+          });
+          if (!_isTooltipVisible) {
+            _showTooltip();
+          }
+        },
+        onExit: (_) {
+          setState(() {
+            _isHovering = false;
+          });
+          if (_isTooltipVisible && !_isLocked) {
+            _hideTooltip();
+          }
+        },
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () {
+            if (_isTooltipVisible) {
+              setState(() {
+                _isLocked = !_isLocked;
+              });
+              if (!_isLocked && !_isHovering) {
+                _hideTooltip();
+              }
+            } else {
+              setState(() {
+                _isLocked = true;
+              });
+              _showTooltip();
+            }
+          },
+          child: widget.child,
+        ),
+      ),
     );
   }
 }
@@ -222,6 +494,31 @@ class MetricsDisplay extends StatelessWidget {
     required this.coin,
     required this.isVeryNarrow,
   }) : super(key: key);
+
+  // Updated liquidity calculation function based on the provided formula
+  String _calculateLiquidity(double marketCap, double volumeToMarketCapRatio) {
+    // Convert marketCap to billions for easier comparison
+    final marketCapInBillions = marketCap / 1000000000;
+    final marketCapInMillions = marketCap / 1000000;
+    
+    // GREEN (High Liquidity):
+    // - Market Cap > $5B OR
+    // - Market Cap > $1B AND Volume/Cap > 10%
+    if (marketCapInBillions > 5 || (marketCapInBillions > 1 && volumeToMarketCapRatio > 10)) {
+      return 'high';
+    }
+    
+    // AMBER (Moderate Liquidity):
+    // - Market Cap > $1B AND Volume/Cap > 5% OR
+    // - Market Cap > $500M AND Volume/Cap > 10%
+    if ((marketCapInBillions > 1 && volumeToMarketCapRatio > 5) || 
+        (marketCapInMillions > 500 && volumeToMarketCapRatio > 10)) {
+      return 'medium';
+    }
+    
+    // The rest is RED (Low Liquidity)
+    return 'low';
+  }
 
   // Calculate metric scores based on the provided criteria
   Map<String, MetricScore> _calculateMetricScores() {
@@ -257,7 +554,7 @@ class MetricsDisplay extends StatelessWidget {
       'Loyalty': _rateMetric(_estimateLoyalty(double.parse(athDropPercentage.toStringAsFixed(2)), priceChange7d)),
       'Momentum': _rateMetric(positiveTimeframes >= 2 ? 'high' : (positiveTimeframes >= 1 ? 'medium' : 'low')),
       'Crash': _rateMetric(athDropPercentage < 30 ? 'high' : (athDropPercentage < 70 ? 'medium' : 'low')),
-      'Liquidity': _rateMetric(volumeToMarketCapRatio >= 10 ? 'high' : (volumeToMarketCapRatio >= 3 ? 'medium' : 'low')),
+      'Liquidity': _rateMetric(_calculateLiquidity(marketCap, volumeToMarketCapRatio.toDouble())), 
       'Manipulation': _rateMetric(_estimateManipulation(marketCap, totalVolume, double.parse(volumeToMarketCapRatio.toStringAsFixed(2)))),
     };
   }
@@ -327,11 +624,11 @@ class MetricsDisplay extends StatelessWidget {
     return Column(
       children: [
         _buildMetricsRow('Age', metrics['Age']!, 'Dominance', metrics['Dominance']!, isVeryNarrow),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         _buildMetricsRow('Adoption', metrics['Adoption']!, 'Loyalty', metrics['Loyalty']!, isVeryNarrow),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         _buildMetricsRow('Momentum', metrics['Momentum']!, 'Crash', metrics['Crash']!, isVeryNarrow),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         _buildMetricsRow('Liquidity', metrics['Liquidity']!, 'Manipulation', metrics['Manipulation']!, isVeryNarrow),
       ],
     );
@@ -342,7 +639,7 @@ class MetricsDisplay extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(child: _buildMetric(label1, score1.color, isVeryNarrow)),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Expanded(child: _buildMetric(label2, score2.color, isVeryNarrow)),
       ],
     );
@@ -356,14 +653,14 @@ class MetricsDisplay extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: Color(0xFFACACAC),
+              color: const Color(0xFFACACAC),
               fontSize: isVeryNarrow ? 9 : 12,
               fontWeight: FontWeight.w400,
             ),
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         Container(
           width: isVeryNarrow ? 6 : 8,
           height: isVeryNarrow ? 6 : 8,

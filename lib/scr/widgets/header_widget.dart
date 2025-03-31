@@ -1,10 +1,21 @@
-
-
-
 import 'package:crypto_tracker/scr/providers/coins_provider.dart';
 import 'package:crypto_tracker/scr/widgets/gradient_text.dart';
+import 'package:crypto_tracker/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart' show ConsumerState, ConsumerStatefulWidget;
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ConsumerState, ConsumerStatefulWidget, ConsumerWidget, Provider, StateProvider;
+
+// Create a scroll controller provider that can be accessed throughout the app
+final scrollControllerProvider = Provider<ScrollController>((ref) {
+  return ScrollController();
+});
+
+
+
+// Provider to track the current active section
+final currentSectionProvider = StateProvider<AppSection>((ref) {
+  return AppSection.home;
+});
+
 class ResponsiveHeader extends ConsumerStatefulWidget {
   const ResponsiveHeader({super.key});
 
@@ -15,10 +26,41 @@ class ResponsiveHeader extends ConsumerStatefulWidget {
 class _ResponsiveHeaderState extends ConsumerState<ResponsiveHeader> {
   TextEditingController controller = TextEditingController();
   bool isSearching = false;
+  
+  // Function to scroll to a specific section
+  void scrollToSection(AppSection section) {
+    final scrollController = ref.read(scrollControllerProvider);
+    
+    // Update the current section
+    ref.read(currentSectionProvider.notifier).state = section;
+    
+    // Determine the scroll position based on the section
+    double scrollPosition = 0;
+    switch (section) {
+      case AppSection.home:
+        scrollPosition = 0; // Scroll to top
+        break;
+      case AppSection.calculator:
+        scrollPosition = 1000; // Adjust this value based on your layout
+        break;
+      case AppSection.contact:
+        scrollPosition = 2000; // Adjust this value based on your layout
+        break;
+    }
+    
+    // Animate to the position
+    scrollController.animateTo(
+      scrollPosition,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 600;
-final coinProvider = ref.watch<CoinsProvider>(coinsProvider); // Replace with your actual provider type
+    // Get the current active section
+    final currentSection = ref.watch(currentSectionProvider);
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
@@ -54,56 +96,21 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider); // Replace with yo
               const SizedBox(
                 width: 20,
               ),
-              if (!isMobile )
-                Container(
-                  width: 350,
-                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF132A46),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child:  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: coinProvider.controller,
-                                              style: TextStyle(fontSize: 12, color: Colors.white),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Search Coin",
-                            
-                          ),
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              isSearching = true;
-                              coinProvider.searchCoins();
-                            } else {
-                              isSearching = false;
-                            }
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                      Icon(Icons.search, color: Colors.grey),
-                    ],
-                  ),
-                ),
             ],
           ),
-          // Search Bar
 
           // Navigation Items
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
-                onPressed: () {},
-                child: const Text(
+                onPressed: () => scrollToSection(AppSection.home),
+                child: Text(
                   "Home",
                   style: TextStyle(
-                    color: Colors.grey,
+                    color: currentSection == AppSection.home ? Colors.white : Colors.grey,
                     fontSize: 15,
+                    fontWeight: currentSection == AppSection.home ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),
@@ -111,35 +118,45 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider); // Replace with yo
                 width: 10,
               ),
               TextButton(
-                onPressed: () {},
-                child: const GradientText(
-                  text: "Calculator",
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.pink,
-                      Colors.purple,
-                      Colors.orange,
-                      Colors.yellow,
-                    ],
+                onPressed: () => scrollToSection(AppSection.calculator),
+                child: currentSection == AppSection.calculator 
+                  ? const GradientText(
+                    text: "Calculator",
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.pink,
+                        Colors.purple,
+                        Colors.orange,
+                        Colors.yellow,
+                      ],
+                    ),
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                  : Text(
+                    "Calculator",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15,
+                    ),
                   ),
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
               ),
               const SizedBox(
                 width: 10,
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF315177),
+                  backgroundColor: currentSection == AppSection.contact 
+                    ? Color(0xFF4183D7) // Brighter blue when active
+                    : Color(0xFF315177),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                 ),
-                onPressed: () {},
+                onPressed: () => scrollToSection(AppSection.contact),
                 child: const Text(
                   "Contact",
                   style: TextStyle(
