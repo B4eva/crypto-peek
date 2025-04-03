@@ -12,14 +12,25 @@ class SiteLogo extends StatelessWidget {
         //color: const Color(0xFFFEDA03),
         borderRadius: BorderRadius.circular(8),
       ),
-      child:   const Text(
-                "Coin  Peek",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
+      child:   Row(
+        children: [
+           Image.asset(
+                 'assets/images/coin-peek.png',
+                height: 100,
+                width: 100,
+         
+ 
+),
+          const Text(
+                    "Coin  Peek",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+        ],
+      ),
     );
   }
 }

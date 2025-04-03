@@ -11,12 +11,12 @@ import 'package:crypto_tracker/scr/widgets/drawer_mobile.dart';
 import 'package:crypto_tracker/scr/widgets/footer.dart';
 import 'package:crypto_tracker/scr/widgets/gradient_text.dart';
 import 'package:crypto_tracker/scr/widgets/header_mobile.dart';
-import 'package:crypto_tracker/scr/widgets/header_widget.dart';
-import 'package:crypto_tracker/scr/widgets/search.dart';
+
 import 'package:crypto_tracker/scr/widgets/sliver_table_view.dart';
 import 'package:crypto_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 class CryptoRiskScanner extends ConsumerStatefulWidget {
   const CryptoRiskScanner({Key? key}) : super(key: key);
   
@@ -168,20 +168,20 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
                     SliverToBoxAdapter(
                       child: Container(
                         key: navController.contactKey, // Important: Key for contact section
-                        child: Column(
+                        child: const Column(
                           children: [
                             SizedBox(height: 40),
-                            Text(
-                              "Contact Us",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                            // Text(
+                            //   "Contact Us",
+                            //   style: TextStyle(
+                            //     fontSize: 24,
+                            //     fontWeight: FontWeight.bold,
+                            //     color: Colors.white,
+                            //   ),
+                            // ),
                             SizedBox(height: 20),
                             // Add contact form or content here
-                            const Footer(),
+                        //    const Footer(),
                             SizedBox(height: 30),
                             Divider(),
                             SizedBox(height: 30),
@@ -217,6 +217,13 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
           // Logo and Brand Name
           Row(
             children: [
+                              Image.asset(
+                 'assets/images/coin-peek.png',
+                height: 100,
+                width: 100,
+         
+ 
+),
            //   Image.asset('assets/images/logo-transparent.png',  height: 100, width: 200, color: Colors.white,),
               // Container(
               //   padding: const EdgeInsets.all(8.0),
@@ -388,11 +395,11 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           SizedBox(
             width: containerWidth,
             child: Text(
-              'CoinPeek helps you understand what could go wrong with any token — so you can make smarter decisions and avoid costly losses.',
+              'CoinPeek transforms public data from sources like CoinMarketCap into clear, explainable risk signals — helping crypto investors avoid bad bets and discover hidden opportunities.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: const Color(0xFFFFFFFF),

@@ -1,5 +1,7 @@
 
 import 'Package:flutter/material.dart';
+import 'package:crypto_tracker/scr/widgets/site_logo.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class Footer extends StatelessWidget {
   const Footer({super.key});
@@ -31,63 +33,37 @@ class Footer extends StatelessWidget {
                 children: [
 
                     const SizedBox(height: 20),
-                  const Text(
-                    'Get in Touch',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
+                  // const Text(
+                  //   'Get in Touch',
+                  //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  // ),
                   const SizedBox(height: 20),
-                  _buildContactForm(),
+             //     _buildContactForm(),
                           const SizedBox(height: 50),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEDA03),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          "CP",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        "CoinPeek",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
+//                   Row(
+//                     children: [
+//                  SvgPicture.asset(
+//                  'assets/svgs/coin-peak.svg',
+//                   semanticsLabel: 'Dart Logo',
+ 
+// ),
+//                       const SizedBox(width: 8),
+//                       const Text(
+//                         "CoinPeek",
+//                         style: TextStyle(
+//                           fontSize: 16,
+//                           fontWeight: FontWeight.w600,
+//                           color: Colors.white,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+                 
+                 
+                 SiteLogo(tap: (){}),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Email: ttbumah@gmail.com',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF626262)),
-                  ),
-                  const Text(
-                    'Phone: +44 7375 937236',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF626262)),
-                  ),
-                  const Text(
-                    'Address: 123 Crypto St, Blockchain City',
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF626262)),
-                  ),
+             
+              
                 
                   const SizedBox(
                     height: 40,
@@ -105,81 +81,67 @@ class Footer extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                             //   color: const Color(0xFFFEDA03),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Text(
-                                "CP",
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              "CoinPeek",
-                              style: TextStyle(
-                                fontSize: 23,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Email: ttbumah@gmail.com',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF626262)),
-                        ),
-                        const Text(
-                          'Phone: +44 7375 937236',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF626262)),
-                        ),
-                        const Text(
-                          'Address: 123 Crypto St, Blockchain City',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF626262)),
-                        ),
+                  //   SiteLogo(tap: (){},),
+                        // Row(
+                        //   children: [
+                        //     Container(
+                        //       padding: const EdgeInsets.all(8.0),
+                        //       decoration: BoxDecoration(
+                        //      //   color: const Color(0xFFFEDA03),
+                        //         borderRadius: BorderRadius.circular(8),
+                        //       ),
+                        //       child: const Text(
+                        //         "CP",
+                        //         style: TextStyle(
+                        //           fontSize: 22,
+                        //           fontWeight: FontWeight.bold,
+                        //           color: Colors.white,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     const SizedBox(width: 8),
+                        //     const Text(
+                        //       "CoinPeek",
+                        //       style: TextStyle(
+                        //         fontSize: 23,
+                        //         fontWeight: FontWeight.w600,
+                        //         color: Colors.white,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        // const SizedBox(height: 10),
+                        // const Text(
+                        //   'Email: ttbumah@gmail.com',
+                        //   style: TextStyle(
+                        //       fontSize: 14,
+                        //       fontWeight: FontWeight.w400,
+                        //       color: Color(0xFF626262)),
+                        // ),
+                        // const Text(
+                        //   'Phone: +44 7375 937236',
+                        //   style: TextStyle(
+                        //       fontSize: 14,
+                        //       fontWeight: FontWeight.w400,
+                        //       color: Color(0xFF626262)),
+                        // ),
+                        // const Text(
+                        //   'Address: 123 Crypto St, Blockchain City',
+                        //   style: TextStyle(
+                        //       fontSize: 14,
+                        //       fontWeight: FontWeight.w400,
+                        //       color: Color(0xFF626262)),
+                        // ),
+                   
+                   
                       ],
                     ),
                   ),
-                  const SizedBox(width: 20), // Space between two columns
-                  // Contact form
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Get in Touch',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        const SizedBox(height: 20),
-                        _buildContactForm(),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                      ],
-                    ),
-                  ),
+              
                 ],
               ),
+    
+    
       ),
     );
   }

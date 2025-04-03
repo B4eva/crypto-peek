@@ -1,6 +1,7 @@
 import 'package:crypto_tracker/scr/models/coin.dart';
+import 'package:crypto_tracker/scr/widgets/score_tooltip.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
+
 
 // Weights configuration for the scoring system
 class MetricWeights {
@@ -16,11 +17,16 @@ class MetricWeights {
   };
 }
 
-class AssetCard extends StatelessWidget {
+class AssetCard extends StatefulWidget {
   final Coin coinData;
 
   const AssetCard({Key? key, required this.coinData}) : super(key: key);
 
+  @override
+  State<AssetCard> createState() => _AssetCardState();
+}
+
+class _AssetCardState extends State<AssetCard> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -38,12 +44,12 @@ class AssetCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCardHeader(coinData, isVeryNarrow, context),
+                _buildCardHeader(widget.coinData, isVeryNarrow, context),
                 SizedBox(height: isVeryNarrow ? 8 : 12),
-                _buildPriceSection(coinData, isVeryNarrow),
+                _buildPriceSection(widget.coinData, isVeryNarrow),
                 const Divider(thickness: 0.2,),
                 SizedBox(height: isVeryNarrow ? 8 : 12),
-                buildMetricsDisplay(coinData, isVeryNarrow),
+                buildMetricsDisplay(widget.coinData, isVeryNarrow),
               ],
             ),
           ),
@@ -143,34 +149,87 @@ class AssetCard extends StatelessWidget {
     );
   }
 
-  // Build tooltip content explaining the score calculation
-  String _buildScoreTooltipContent(Map<String, MetricScore> metrics) {
-    final StringBuffer buffer = StringBuffer();
-    buffer.writeln('Score Breakdown:');
+String _buildScoreTooltipContent(Map<String, MetricScore> metrics) {
+  final StringBuffer buffer = StringBuffer();
+  buffer.writeln('Score Breakdown:');
+  buffer.writeln('');
+  
+  // Map of metric descriptions based on rating
+  final Map<String, Map<String, String>> metricDescriptions = {
+    'Age': {
+      'high': 'Long-term project with proven stability',
+      'medium': 'Some maturity, but still growing',
+      'low': 'Very new or untested project',
+    },
+    'Dominance': {
+      'high': 'Strong market presence and recognition',
+      'medium': 'Gaining traction, but not widely adopted yet',
+      'low': 'Low visibility and influence in the market',
+    },
+    'Adoption': {
+      'high': 'Broad and healthy user base',
+      'medium': 'Some user activity, but room to grow',
+      'low': 'Weak adoption and limited real-world use',
+    },
+    'Loyalty': {
+      'high': 'Most holders are long-term believers',
+      'medium': 'Mixed sentiment among holders',
+      'low': 'Mostly short-term or speculative holders',
+    },
+    'Momentum': {
+      'high': 'Clear upward trend across timeframes',
+      'medium': 'Mixed or inconsistent trend signals',
+      'low': 'Downward trend in recent months',
+    },
+    'Crash': {
+      'high': 'Holding strong near past highs',
+      'medium': 'Significant drop, possible recovery zone',
+      'low': 'Heavy crash, confidence likely broken',
+    },
+    'Liquidity': {
+      'high': 'Easy to buy and sell with minimal slippage',
+      'medium': 'Tradable but may experience some price impact',
+      'low': 'Low activity, harder to exit positions safely',
+    },
+    'Manipulation': {
+      'high': 'Well-distributed supply, low whale influence',
+      'medium': 'Some concentration among large holders',
+      'low': 'High whale control, risk of manipulation',
+    },
+  };
+  
+  // Calculate weighted scores for each metric
+  metrics.forEach((metric, score) {
+    final weight = MetricWeights.weights[metric]! * 100;
+    final weightedScore = score.score * MetricWeights.weights[metric]!;
+    
+    // Determine rating level based on score
+    String ratingLevel = 'medium';
+    if (score.score == 100) {
+      ratingLevel = 'high';
+    } else if (score.score == 0) {
+      ratingLevel = 'low';
+    }
+    
+    // Get description text for this metric and rating
+    final description = metricDescriptions[metric]?[ratingLevel] ?? '';
+    
+    buffer.writeln('$metric:');
+    buffer.writeln('• $description');
     buffer.writeln('');
-    
-    // Calculate weighted scores for each metric
-    metrics.forEach((metric, score) {
-      final weight = MetricWeights.weights[metric]! * 100;
-      final weightedScore = score.score * MetricWeights.weights[metric]!;
-      final rating = score.score == 100 ? 'High' : (score.score == 50 ? 'Medium' : 'Low');
-      
-      buffer.writeln('$metric (${weight.toStringAsFixed(0)}%):');
-      buffer.writeln('  Rating: $rating (${score.score})');
-      buffer.writeln('  Weighted: ${weightedScore.toStringAsFixed(1)}');
-      buffer.writeln('');
-    });
-    
-    // Add total score
-    double totalScore = 0;
-    metrics.forEach((metric, score) {
-      totalScore += score.score * MetricWeights.weights[metric]!;
-    });
-    
-    buffer.writeln('Final Score: ${totalScore.toStringAsFixed(1)}/100');
-    
-    return buffer.toString();
-  }
+  });
+  
+  // Add total score
+  double totalScore = 0;
+  metrics.forEach((metric, score) {
+    totalScore += score.score * MetricWeights.weights[metric]!;
+  });
+  
+  buffer.writeln('Final Score: ${totalScore.toStringAsFixed(1)}/100');
+  
+  return buffer.toString();
+}
+
 
   // Calculate the final score based on metrics and weights
   double _calculateFinalScore(Map<String, MetricScore> metrics) {
@@ -308,183 +367,7 @@ class AssetCard extends StatelessWidget {
   }
 }
 
-// Custom tooltip widget that shows on hover/click and dismisses appropriately
-class ScoreTooltip extends StatefulWidget {
-  final Widget child;
-  final String message;
 
-  const ScoreTooltip({
-    Key? key,
-    required this.child,
-    required this.message,
-  }) : super(key: key);
-
-  @override
-  State<ScoreTooltip> createState() => _ScoreTooltipState();
-}
-
-class _ScoreTooltipState extends State<ScoreTooltip> {
-  bool _isTooltipVisible = false;
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntry;
-  bool _isHovering = false;
-  bool _isLocked = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Add global click listener to dismiss tooltip when clicking elsewhere
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      GestureBinding.instance.pointerRouter.addGlobalRoute(_handleGlobalPointerEvent);
-    });
-  }
-
-  @override
-  void dispose() {
-    _hideTooltip();
-    GestureBinding.instance.pointerRouter.removeGlobalRoute(_handleGlobalPointerEvent);
-    super.dispose();
-  }
-
-  // Handle clicks outside the tooltip
-  void _handleGlobalPointerEvent(PointerEvent event) {
-    if (event is PointerDownEvent && _isTooltipVisible) {
-      final RenderBox? box = context.findRenderObject() as RenderBox?;
-      if (box == null) return;
-      
-      final position = box.localToGlobal(Offset.zero);
-      final size = box.size;
-      final Rect widgetRect = Rect.fromLTWH(
-        position.dx,
-        position.dy,
-        size.width,
-        size.height
-      );
-      
-      if (!widgetRect.contains(event.position)) {
-        _hideTooltip();
-        setState(() {
-          _isLocked = false;
-        });
-      }
-    }
-  }
-
-  void _showTooltip() {
-    if (_overlayEntry != null) return;
-    
-    _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-    setState(() {
-      _isTooltipVisible = true;
-    });
-  }
-
-  void _hideTooltip() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-    setState(() {
-      _isTooltipVisible = false;
-    });
-  }
-
-  OverlayEntry _createOverlayEntry() {
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        width: 250,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: const Offset(0, 30),
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E3A5C),
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: widget.message.split('\n').map((line) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 2),
-                    child: Text(
-                      line,
-                      style: TextStyle(
-                        color: line.contains('Final Score:') ? Colors.white : 
-                               line.contains('Rating:') ? Colors.yellow : 
-                               line.contains('Weighted:') ? Colors.lightBlue : 
-                               line.endsWith(':') ? Colors.white : Colors.grey[300],
-                        fontSize: line.contains('Score Breakdown:') ? 14 : 12,
-                        fontWeight: line.contains('Score Breakdown:') || line.contains('Final Score:') 
-                                   ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: MouseRegion(
-        onEnter: (_) {
-          setState(() {
-            _isHovering = true;
-          });
-          if (!_isTooltipVisible) {
-            _showTooltip();
-          }
-        },
-        onExit: (_) {
-          setState(() {
-            _isHovering = false;
-          });
-          if (_isTooltipVisible && !_isLocked) {
-            _hideTooltip();
-          }
-        },
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: () {
-            if (_isTooltipVisible) {
-              setState(() {
-                _isLocked = !_isLocked;
-              });
-              if (!_isLocked && !_isHovering) {
-                _hideTooltip();
-              }
-            } else {
-              setState(() {
-                _isLocked = true;
-              });
-              _showTooltip();
-            }
-          },
-          child: widget.child,
-        ),
-      ),
-    );
-  }
-}
-
-// Updated MetricsDisplay class with new metrics
 class MetricsDisplay extends StatelessWidget {
   final Coin coin;
   final bool isVeryNarrow;
@@ -692,3 +575,8 @@ Widget buildMetricsDisplay(Coin coin, bool isVeryNarrow) {
     isVeryNarrow: isVeryNarrow,
   );
 }
+
+
+
+
+
