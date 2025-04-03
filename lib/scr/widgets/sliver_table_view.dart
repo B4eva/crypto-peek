@@ -1,7 +1,10 @@
 import 'package:crypto_tracker/scr/models/coin.dart';
 import 'package:crypto_tracker/scr/providers/coins_provider.dart';
 import 'package:crypto_tracker/scr/providers/pagination_provider.dart';
+import 'package:crypto_tracker/scr/widgets/asset_card.dart';
 import 'package:crypto_tracker/scr/widgets/hoverable_cell.dart';
+import 'package:crypto_tracker/scr/widgets/score_tooltip.dart';
+import 'package:crypto_tracker/utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -154,33 +157,32 @@ class SliverTableViewWidget extends ConsumerWidget {
       ),
     );
   }
+List<DataRow> _buildRows(List<Coin> coins, int startIndex) {
+  return coins.asMap().entries.map((entry) {
+    final index = entry.key + startIndex + 1;
+    final coin = entry.value;
+    final metrics = _calculateAllMetrics(coin);
 
-  // Updated row building function to include startIndex for correct numbering
-  List<DataRow> _buildRows(List<Coin> coins, int startIndex) {
-    return coins.asMap().entries.map((entry) {
-      final index = entry.key + startIndex + 1; // Add startIndex to display correct numbering
-      final coin = entry.value;
-      final metrics = _calculateAllMetrics(coin);
-
-      return DataRow(
-        cells: [
+    return DataRow(
+      cells: [
           _buildIndexCell(index),
-          _buildNameCell(coin),
-          _buildPriceCell(coin),
-          _buildChangeCell(coin.priceChangePercentage24h),
-         
-          _buildMetricCell(metrics['Age']!),
-          _buildMetricCell(metrics['Dominance']!),
-          _buildMetricCell(metrics['Adoption']!),
-          _buildMetricCell(metrics['Loyalty']!),
-          _buildMetricCell(metrics['Momentum']!),
-          _buildMetricCell(metrics['Crash']!),
-          _buildMetricCell(metrics['Liquidity']!),
-          _buildMetricCell(metrics['Manipulation']!),
-        ],
-      );
-    }).toList();
-  }
+    _buildNameCell(coin),
+    _buildPriceCell(coin),
+    _buildChangeCell(coin.priceChangePercentage24h),
+    
+    _buildMetricCell('Age', metrics['Age']!),
+        _buildMetricCell('Dominance', metrics['Dominance']!),
+        _buildMetricCell('Adoption', metrics['Adoption']!),
+        _buildMetricCell('Loyalty', metrics['Loyalty']!),
+        _buildMetricCell('Momentum', metrics['Momentum']!),
+        _buildMetricCell('Crash', metrics['Crash']!),
+        _buildMetricCell('Liquidity', metrics['Liquidity']!),
+        _buildMetricCell('Manipulation', metrics['Manipulation']!),
+        _buildOverallScoreCell(coin), 
+      ],
+    );
+  }).toList();
+}
 
   DataCell _buildIndexCell(int index) {
     return DataCell(
@@ -272,38 +274,165 @@ class SliverTableViewWidget extends ConsumerWidget {
     );
   }
 
-  // Updated to use MetricScore object instead of boolean
-  DataCell _buildMetricCell(MetricScore metricScore) {
-    return DataCell(
-      Center(
+DataCell _buildMetricCell(String metricName, MetricScore metricScore) {
+  // Determine rating level based on score
+  String ratingLevel = 'medium';
+  if (metricScore.score == 100) {
+    ratingLevel = 'high';
+  } else if (metricScore.score == 0) {
+    ratingLevel = 'low';
+  }
+  
+  // Get detailed description for this metric and rating
+  final description = metricDescriptionsDetailed[metricName]?[ratingLevel] ?? '';
+  
+  // Create tooltip content
+  final tooltipContent = _buildScoreTooltipContent(metricName, metricScore, description);
+  
+  return DataCell(
+    ScoreTooltip(
+      message: tooltipContent,
+      child: Center(
         child: Container(
-          width: 8,
-          height: 8,
+          width: 10,
+          height: 10,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: metricScore.color,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+String _buildScoreTooltipContent(String metricName, MetricScore metricScore, String description) {
+  final StringBuffer buffer = StringBuffer();
+  buffer.writeln('$metricName:');
+  buffer.writeln('');
+  buffer.writeln('• $description');
+  
+  return buffer.toString();
+}
+
+
+DataCell _buildOverallScoreCell(Coin coin) {
+  final metrics = _calculateAllMetrics(coin);
+  
+  // Calculate overall score
+  double totalScore = 0.0;
+  final Map<String, double> weights = MetricWeights.weights;
+  
+  metrics.forEach((metric, metricScore) {
+    totalScore += metricScore.score * (weights[metric] ?? 0.125); // Default to equal weight if not specified
+  });
+  
+  // Round to one decimal place
+  final score = double.parse(totalScore.toStringAsFixed(1));
+  
+  // Get color based on score
+  Color scoreColor = _getScoreColor(score);
+  
+  // Build full tooltip content
+  final tooltipContent = _buildFullScoreTooltipContent(metrics);
+  
+  return DataCell(
+    ScoreTooltip(
+      message: tooltipContent,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: scoreColor.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: scoreColor.withOpacity(0.4), width: 1),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$score',
+              style: TextStyle(
+                color: scoreColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(width: 4),
+            Icon(
+              Icons.info_outline,
+              color: scoreColor,
+              size: 12,
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+
+String _buildFullScoreTooltipContent(Map<String, MetricScore> metrics) {
+  final StringBuffer buffer = StringBuffer();
+  buffer.writeln('Score Breakdown:');
+  buffer.writeln('');
+  
+  // Get metric descriptions for each metric
+  metrics.forEach((metric, score) {
+    String ratingLevel = 'medium';
+    if (score.score == 100) {
+      ratingLevel = 'high';
+    } else if (score.score == 0) {
+      ratingLevel = 'low';
+    }
+    
+    // Get detailed description
+    final description = metricDescriptionsDetailed[metric]?[ratingLevel] ?? '';
+    
+    buffer.writeln('$metric:');
+    buffer.writeln('• $description');
+    buffer.writeln('');
+  });
+  
+  // Add total score
+  double totalScore = 0;
+  final weights = MetricWeights.weights;
+  metrics.forEach((metric, score) {
+    totalScore += score.score * (weights[metric] ?? 0.125);
+  });
+  
+  buffer.writeln('Final Score: ${totalScore.toStringAsFixed(1)}/100');
+  
+  return buffer.toString();
+}
+
+// Helper function to get color based on score
+Color _getScoreColor(double score) {
+  if (score >= 80) return Colors.green;
+  if (score >= 60) return Colors.lightGreen;
+  if (score >= 40) return Colors.amber;
+  if (score >= 20) return Colors.orange;
+  return Colors.red;
+}
+
+
 
   List<DataColumn> _buildColumns() {
-    // Updated column names to match new metrics
-    final columns = [
-      '#',
-      'Name',
-      'Price',
-      '24h %',
-      'Age',
-      'Dominance',
-      'Adoption',
-      'Loyalty',
-      'Momentum',
-      'Crash',
-      'Liquidity',
-      'Manipulation',
-    ];
+   final columns = [
+    '#',
+    'Name',
+    'Price',
+    '24h %',
+ 
+    'Age',
+    'Dominance',
+    'Adoption',
+    'Loyalty',
+    'Momentum',
+    'Crash',
+    'Liquidity',
+    'Manipulation',
+       'Score', // New overall score column
+  ];
 
     return columns.map((title) {
       if (title == 'Name') {
@@ -334,6 +463,9 @@ class SliverTableViewWidget extends ConsumerWidget {
       }
     }).toList();
   }
+
+
+
 
   EdgeInsets _getPadding(double width) {
     if (width < 400) {
@@ -781,5 +913,3 @@ class MetricScore {
   });
 }
 
-// This assumes HoverableDataTable is defined elsewhere, since you're importing
-// it from 'package:crypto_tracker/scr/widgets/hoverable_cell.dart'

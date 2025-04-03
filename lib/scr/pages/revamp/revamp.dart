@@ -399,7 +399,7 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
           SizedBox(
             width: containerWidth,
             child: Text(
-              'CoinPeek transforms public data from sources like CoinMarketCap into clear, explainable risk signals — helping crypto investors avoid bad bets and discover hidden opportunities.',
+              'Never miss a beat. CoinPeek is your early warning system for crypto — transforming noisy, complex data into clear, explainable signals that help you avoid bad bets and uncover hidden opportunities',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: const Color(0xFFFFFFFF),

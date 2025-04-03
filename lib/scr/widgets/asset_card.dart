@@ -114,7 +114,7 @@ class _AssetCardState extends State<AssetCard> {
             ],
           ),
         ),
-        SizedBox(width: isVeryNarrow ? 8 : 12),
+        SizedBox(width: isVeryNarrow ? 4 : 12),
         ScoreTooltip(
           message: tooltipContent,
           child: Container(

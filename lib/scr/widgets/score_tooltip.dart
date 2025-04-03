@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 
 class ScoreTooltip extends StatefulWidget {
@@ -49,21 +47,50 @@ class _ScoreTooltipState extends State<ScoreTooltip> {
   }
 
   OverlayEntry _createOverlayEntry() {
-    // Get the screen size to position tooltip properly
+    // Get the screen size and position information
     final screenSize = MediaQuery.of(context).size;
+    
+    // Get the position and size of the source widget
+    final RenderBox box = context.findRenderObject() as RenderBox;
+    final position = box.localToGlobal(Offset.zero);
+    
+    // Calculate tooltip width - use narrower width on very small screens
+    final tooltipWidth = screenSize.width < 400 ? 250.0 : 300.0;
+    
+    // Determine if we're close to the right edge
+    final isNearRightEdge = position.dx > screenSize.width - tooltipWidth - 20;
+    
+    // Determine if we're close to the left edge
+    final isNearLeftEdge = position.dx < tooltipWidth / 2;
+    
+    // Calculate horizontal offset
+    double horizontalOffset = 0;
+    if (isNearRightEdge) {
+      // Align tooltip to the right edge of the screen with padding
+      horizontalOffset = -(position.dx + tooltipWidth - screenSize.width + 10);
+    } else if (isNearLeftEdge) {
+      // Align tooltip to stay within left screen boundary
+      horizontalOffset = -position.dx + 10;
+    }
+    
+    // Determine if we're close to the bottom
+    final isNearBottom = position.dy > screenSize.height - 300;
+    
+    // Calculate vertical offset - show above the widget if near bottom
+    final verticalOffset = isNearBottom ? -60.0 : 30.0;
     
     return OverlayEntry(
       builder: (context) => Positioned(
-        width: 300, // Wider tooltip to accommodate descriptive text
+        width: tooltipWidth,
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
-          offset: const Offset(0, 30),
+          offset: Offset(horizontalOffset, verticalOffset),
           child: Material(
             color: Colors.transparent,
             child: Container(
               constraints: BoxConstraints(
-                maxHeight: screenSize.height * 0.8, // Allow taller tooltip for all descriptions
+                maxHeight: screenSize.height * 0.7, // Limit height to 70% of screen
               ),
               decoration: BoxDecoration(
                 color: const Color(0xFF1E3A5C),
@@ -249,45 +276,65 @@ class _ScoreTooltipState extends State<ScoreTooltip> {
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: MouseRegion(
-        onEnter: (_) {
-          setState(() {
-            _isHovering = true;
-          });
-          if (!_isTooltipVisible) {
-            _showTooltip();
-          }
-        },
-        onExit: (_) {
-          setState(() {
-            _isHovering = false;
-          });
-          if (_isTooltipVisible && !_isLocked) {
-            _hideTooltip();
-          }
-        },
-        cursor: SystemMouseCursors.click,
+    // On mobile, use tap instead of hover
+    final isMobile = MediaQuery.of(context).size.width < 600;
+    
+    if (isMobile) {
+      return CompositedTransformTarget(
+        link: _layerLink,
         child: GestureDetector(
           onTap: () {
             if (_isTooltipVisible) {
-              setState(() {
-                _isLocked = !_isLocked;
-              });
-              if (!_isLocked && !_isHovering) {
-                _hideTooltip();
-              }
+              _hideTooltip();
             } else {
-              setState(() {
-                _isLocked = true;
-              });
               _showTooltip();
             }
           },
           child: widget.child,
         ),
-      ),
-    );
+      );
+    } else {
+      // Use hover behavior on desktop
+      return CompositedTransformTarget(
+        link: _layerLink,
+        child: MouseRegion(
+          onEnter: (_) {
+            setState(() {
+              _isHovering = true;
+            });
+            if (!_isTooltipVisible) {
+              _showTooltip();
+            }
+          },
+          onExit: (_) {
+            setState(() {
+              _isHovering = false;
+            });
+            if (_isTooltipVisible && !_isLocked) {
+              _hideTooltip();
+            }
+          },
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () {
+              if (_isTooltipVisible) {
+                setState(() {
+                  _isLocked = !_isLocked;
+                });
+                if (!_isLocked && !_isHovering) {
+                  _hideTooltip();
+                }
+              } else {
+                setState(() {
+                  _isLocked = true;
+                });
+                _showTooltip();
+              }
+            },
+            child: widget.child,
+          ),
+        ),
+      );
+    }
   }
 }
