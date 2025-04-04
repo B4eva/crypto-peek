@@ -3,20 +3,18 @@ import 'package:crypto_tracker/scr/widgets/score_tooltip.dart';
 import 'package:flutter/material.dart';
 
 
-// Weights configuration for the scoring system
 class MetricWeights {
   static const Map<String, double> weights = {
-    'Age': 0.10,          // 10%
-    'Dominance': 0.10,    // 10%
-    'Adoption': 0.15,     // 15%
-    'Loyalty': 0.15,      // 15%
-    'Momentum': 0.15,     // 15%
-    'Crash': 0.10,        // 10%
-    'Liquidity': 0.15,    // 15%
-    'Manipulation': 0.10, // 10%
+    'Age': 0.15,          // Changed from 0.10 to 0.15
+    'Dominance': 0.15,    // Changed from 0.10 to 0.15
+    'Adoption': 0.15,     // Unchanged at 0.15
+    'Loyalty': 0.10,      // Changed from 0.15 to 0.10
+    'Momentum': 0.10,     // Changed from 0.15 to 0.10
+    'Crash': 0.05,        // Changed from 0.10 to 0.05
+    'Liquidity': 0.15,    // Unchanged at 0.15
+    'Manipulation': 0.15, // Changed from 0.10 to 0.15
   };
 }
-
 class AssetCard extends StatefulWidget {
   final Coin coinData;
 
@@ -59,14 +57,13 @@ class _AssetCardState extends State<AssetCard> {
   }
 
   Widget _buildCardHeader(Coin coinData, bool isVeryNarrow, BuildContext context) {
-    // Calculate the score using the metrics display logic
     final metricsDisplay = MetricsDisplay(coin: coinData, isVeryNarrow: isVeryNarrow);
-    final metrics = metricsDisplay._calculateMetricScores();
-    final score = _calculateFinalScore(metrics);
-    
-    // Create tooltip content
-    final tooltipContent = _buildScoreTooltipContent(metrics);
-    
+  final metrics = metricsDisplay._calculateMetricScores();
+  final score = _calculateFinalScore(metrics);
+  
+  // Create tooltip content
+  final tooltipContent = _buildScoreTooltipContent(metrics, score);
+  
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -149,7 +146,7 @@ class _AssetCardState extends State<AssetCard> {
     );
   }
 
-String _buildScoreTooltipContent(Map<String, MetricScore> metrics) {
+String _buildScoreTooltipContent(Map<String, MetricScore> metrics, double finalScore) {
   final StringBuffer buffer = StringBuffer();
   buffer.writeln('Score Breakdown:');
   buffer.writeln('');
@@ -225,20 +222,32 @@ String _buildScoreTooltipContent(Map<String, MetricScore> metrics) {
     totalScore += score.score * MetricWeights.weights[metric]!;
   });
   
-  buffer.writeln('Final Score: ${totalScore.toStringAsFixed(1)}/100');
+  buffer.writeln('Final Score: ${finalScore.toStringAsFixed(1)}/100');
   
   return buffer.toString();
 }
 
 
-  // Calculate the final score based on metrics and weights
-  double _calculateFinalScore(Map<String, MetricScore> metrics) {
-    double finalScore = 0.0;
-    metrics.forEach((metric, metricScore) {
-      finalScore += metricScore.score * MetricWeights.weights[metric]!;
-    });
-    return finalScore;
+ double _calculateFinalScore(Map<String, MetricScore> metrics) {
+  double finalScore = 0.0;
+  metrics.forEach((metric, metricScore) {
+    finalScore += metricScore.score * MetricWeights.weights[metric]!;
+  });
+  
+  // Add bonus for large market cap coins (>100B)
+  if (widget.coinData.marketCap > 100000000000) {
+    finalScore += 10;
+    // Ensure score doesn't exceed 100
+    finalScore = finalScore > 100 ? 100 : finalScore;
   }
+  
+  // Cap perfect scores at 98
+  if (finalScore >= 100) {
+    finalScore = 98;
+  }
+  
+  return finalScore;
+}
 
   // Get color based on the score
   Color _getScoreColor(double score) {

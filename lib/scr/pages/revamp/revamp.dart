@@ -171,14 +171,7 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
                         child: const Column(
                           children: [
                             SizedBox(height: 40),
-                            // Text(
-                            //   "Contact Us",
-                            //   style: TextStyle(
-                            //     fontSize: 24,
-                            //     fontWeight: FontWeight.bold,
-                            //     color: Colors.white,
-                            //   ),
-                            // ),
+                          
                             SizedBox(height: 20),
                             // Add contact form or content here
                         //    const Footer(),
@@ -225,24 +218,7 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
  
 ),
            //   Image.asset('assets/images/logo-transparent.png',  height: 100, width: 200, color: Colors.white,),
-              // Container(
-              //   padding: const EdgeInsets.all(8.0),
-              //   decoration: BoxDecoration(
-              //     color: const Color(0xFFFEDA03),
-              //     borderRadius: BorderRadius.circular(8),
-              //   ),
-              //   child: const Text(
-              //     "CP",
-              //     style: TextStyle(
-              //       fontSize: 20,
-              //       fontWeight: FontWeight.bold,
-              //       color: Colors.black,
-              //     ),
-              //   ),
-              // ),
-             
-             
-              // const SizedBox(width: 8),
+         
              
               const Text(
                 "Coin  Peek",

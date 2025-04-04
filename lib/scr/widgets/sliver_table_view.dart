@@ -327,15 +327,26 @@ DataCell _buildOverallScoreCell(Coin coin) {
     totalScore += metricScore.score * (weights[metric] ?? 0.125); // Default to equal weight if not specified
   });
   
+  // Apply 10-point bonus for large market cap coins (>100B)
+  if (coin.marketCap > 100000000000) {
+    totalScore += 10;
+    // Ensure score doesn't exceed 100
+    totalScore = totalScore > 100 ? 100 : totalScore;
+  }
+  
+  // Cap perfect scores at 98
+  if (totalScore >= 100) {
+    totalScore = 98;
+  }
+  
   // Round to one decimal place
   final score = double.parse(totalScore.toStringAsFixed(1));
   
   // Get color based on score
   Color scoreColor = _getScoreColor(score);
   
-  // Build full tooltip content
-  final tooltipContent = _buildFullScoreTooltipContent(metrics);
-  
+
+  final tooltipContent = _buildFullScoreTooltipContent(metrics, coin);
   return DataCell(
     ScoreTooltip(
       message: tooltipContent,
@@ -370,8 +381,7 @@ DataCell _buildOverallScoreCell(Coin coin) {
   );
 }
 
-
-String _buildFullScoreTooltipContent(Map<String, MetricScore> metrics) {
+String _buildFullScoreTooltipContent(Map<String, MetricScore> metrics, Coin coin) {
   final StringBuffer buffer = StringBuffer();
   buffer.writeln('Score Breakdown:');
   buffer.writeln('');
@@ -399,6 +409,18 @@ String _buildFullScoreTooltipContent(Map<String, MetricScore> metrics) {
   metrics.forEach((metric, score) {
     totalScore += score.score * (weights[metric] ?? 0.125);
   });
+  
+  // Apply 10-point bonus for large market cap coins (>100B)
+  if (coin.marketCap > 100000000000) {
+    totalScore += 10;
+    // Ensure score doesn't exceed 100
+    totalScore = totalScore > 100 ? 100 : totalScore;
+  }
+  
+  // Cap perfect scores at 98
+  if (totalScore >= 100) {
+    totalScore = 98;
+  }
   
   buffer.writeln('Final Score: ${totalScore.toStringAsFixed(1)}/100');
   
