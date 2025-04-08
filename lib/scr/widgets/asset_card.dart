@@ -12,7 +12,7 @@ class MetricWeights {
     'Momentum': 0.10,     // Changed from 0.15 to 0.10
     'Crash': 0.05,        // Changed from 0.10 to 0.05
     'Liquidity': 0.15,    // Unchanged at 0.15
-    'Manipulation': 0.15, // Changed from 0.10 to 0.15
+    'Whale Control': 0.15, // Changed from 0.10 to 0.15
   };
 }
 class AssetCard extends StatefulWidget {
@@ -188,7 +188,7 @@ String _buildScoreTooltipContent(Map<String, MetricScore> metrics, double finalS
       'medium': 'Tradable but may experience some price impact',
       'low': 'Low activity, harder to exit positions safely',
     },
-    'Manipulation': {
+    'Whale Control': {
       'high': 'Well-distributed supply, low whale influence',
       'medium': 'Some concentration among large holders',
       'low': 'High whale control, risk of manipulation',
@@ -447,7 +447,7 @@ class MetricsDisplay extends StatelessWidget {
       'Momentum': _rateMetric(positiveTimeframes >= 2 ? 'high' : (positiveTimeframes >= 1 ? 'medium' : 'low')),
       'Crash': _rateMetric(athDropPercentage < 30 ? 'high' : (athDropPercentage < 70 ? 'medium' : 'low')),
       'Liquidity': _rateMetric(_calculateLiquidity(marketCap, volumeToMarketCapRatio.toDouble())), 
-      'Manipulation': _rateMetric(_estimateManipulation(marketCap, totalVolume, double.parse(volumeToMarketCapRatio.toStringAsFixed(2)))),
+'Whale Control': _rateMetric(_estimateManipulation(coin)),
     };
   }
 
@@ -476,24 +476,80 @@ class MetricsDisplay extends StatelessWidget {
     return 'low';
   }
 
-  String _estimateManipulation(double marketCap, double totalVolume, double volumeToMarketCapRatio) {
-    // Based on the screenshots:
-    // - Low whale % is good (green)
-    // - High whale % is bad (red)
-    
-    // For lower market cap coins, manipulation risk is higher
-    if (marketCap < 1000000000) {
-      // Small cap coins with low volume are at high risk
-      if (volumeToMarketCapRatio < 3) return 'high';
-      return 'medium';
-    }
-    
-    // For large market cap coins
-    if (volumeToMarketCapRatio < 1) return 'high'; // Very low volume compared to market cap
-    if (volumeToMarketCapRatio < 5) return 'medium';
-    return 'low'; // Good volume to market cap ratio
+  double _calculateWhalePercentage(Coin coin) {
+  // Since CoinGecko doesn't directly provide whale percentage data,
+  // we'll use a combination of available metrics as a proxy
+  
+  // 1. Consider market cap - larger market caps tend to have lower whale concentration
+  final marketCapInBillions = coin.marketCap / 1000000000.0;
+  
+  // 2. Consider trading volume to market cap ratio - higher liquidity often correlates with lower whale concentration
+  final volumeToMarketCapRatio = coin.totalVolume / coin.marketCap;
+  
+  // 3. Consider market cap ranking - top coins tend to have more distributed ownership
+  final marketCapRank = coin.marketCapRank;
+  
+  // Base whale percentage estimation formula:
+  // - Start with a base of 70% (high concentration)
+  // - Subtract based on market cap (larger cap = lower whale %)
+  // - Subtract based on volume/market cap ratio (higher ratio = lower whale %)
+  // - Subtract based on market cap rank (higher rank = lower whale %)
+  
+  double estimatedWhalePercentage = 70;
+  
+  // Adjust based on market cap (up to -30%)
+  if (marketCapInBillions > 100) {
+    estimatedWhalePercentage -= 30; // Extremely large market cap (BTC, ETH)
+  } else if (marketCapInBillions > 20) {
+    estimatedWhalePercentage -= 25; // Very large market cap
+  } else if (marketCapInBillions > 5) {
+    estimatedWhalePercentage -= 20; // Large market cap
+  } else if (marketCapInBillions > 1) {
+    estimatedWhalePercentage -= 15; // Medium-large market cap
+  } else if (marketCapInBillions > 0.1) {
+    estimatedWhalePercentage -= 5; // Medium market cap
   }
+  
+  // Adjust based on volume/market cap ratio (up to -15%)
+  if (volumeToMarketCapRatio > 0.1) {
+    estimatedWhalePercentage -= 15; // Very high liquidity
+  } else if (volumeToMarketCapRatio > 0.05) {
+    estimatedWhalePercentage -= 10; // High liquidity
+  } else if (volumeToMarketCapRatio > 0.02) {
+    estimatedWhalePercentage -= 5; // Medium liquidity
+  }
+  
+  // Adjust based on market cap rank (up to -15%)
+  if (marketCapRank <= 5) {
+    estimatedWhalePercentage -= 15; // Top 5 coin
+  } else if (marketCapRank <= 20) {
+    estimatedWhalePercentage -= 10; // Top 20 coin
+  } else if (marketCapRank <= 50) {
+    estimatedWhalePercentage -= 5; // Top 50 coin
+  }
+  
+  // Ensure percentage is within bounds
+  if (estimatedWhalePercentage < 5) estimatedWhalePercentage = 5;
+  if (estimatedWhalePercentage > 90) estimatedWhalePercentage = 90;
+  
+  return estimatedWhalePercentage;
+}
 
+
+
+// To this simplified version:
+String _estimateManipulation(Coin coin) {
+  // Get estimated whale percentage
+  final whalePercentage = _calculateWhalePercentage(coin);
+  
+  // Apply thresholds from your criteria
+  if (whalePercentage < 20) return 'low';     // Green: Whale % < 20%
+  if (whalePercentage <= 50) return 'medium'; // Amber: Whale % 20-50%
+  return 'high';                              // Red: Whale % > 50%
+}
+
+
+ 
   MetricScore _rateMetric(String rating) {
     // Convert rating string to MetricScore object with appropriate colors
     switch (rating.toLowerCase()) {
@@ -521,7 +577,7 @@ class MetricsDisplay extends StatelessWidget {
         const SizedBox(height: 8),
         _buildMetricsRow('Momentum', metrics['Momentum']!, 'Crash', metrics['Crash']!, isVeryNarrow),
         const SizedBox(height: 8),
-        _buildMetricsRow('Liquidity', metrics['Liquidity']!, 'Manipulation', metrics['Manipulation']!, isVeryNarrow),
+        _buildMetricsRow('Liquidity', metrics['Liquidity']!, 'Whale Control', metrics['Whale Control']!, isVeryNarrow),
       ],
     );
   }

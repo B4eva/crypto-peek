@@ -14,21 +14,25 @@ class SiteLogo extends StatelessWidget {
       ),
       child:   Row(
         children: [
-           Image.asset(
-                 'assets/images/coin-peek.png',
-                height: 100,
-                width: 100,
-         
+        Image.asset(
+                 'assets/images/coinpeek-white.png',
+             
+        //  height: 60,
+        //  width: 60,
+         fit: BoxFit.cover,
  
 ),
-          const Text(
-                    "Coin  Peek",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
+SizedBox(width: 5),
+              const Text(
+                "CoinPeek",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              
+       
         ],
       ),
     );

@@ -210,20 +210,19 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
           // Logo and Brand Name
           Row(
             children: [
-                              Image.asset(
-                 'assets/images/coin-peek.png',
-                height: 100,
-                width: 100,
-         
+ Image.asset(
+                 'assets/images/coinpeek-white.png',
+             
+         height: 60,
+         width: 60,
+         fit: BoxFit.cover,
  
 ),
-           //   Image.asset('assets/images/logo-transparent.png',  height: 100, width: 200, color: Colors.white,),
-         
-             
+           SizedBox(width: 5,), 
               const Text(
-                "Coin  Peek",
+                "CoinPeek",
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),

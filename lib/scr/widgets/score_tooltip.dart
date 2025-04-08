@@ -110,8 +110,8 @@ class _ScoreTooltipState extends State<ScoreTooltip> {
                   // Close button row
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF152A42),
+                    decoration:const  BoxDecoration(
+                      color:  Color(0xFF152A42),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(8),
                         topRight: Radius.circular(8),
@@ -120,7 +120,7 @@ class _ScoreTooltipState extends State<ScoreTooltip> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
+                     const    Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
                             "Asset Evaluation",
@@ -179,7 +179,7 @@ class _ScoreTooltipState extends State<ScoreTooltip> {
             padding: const EdgeInsets.only(bottom: 4, top: 8),
             child: Text(
               line,
-              style: TextStyle(
+              style:const  TextStyle(
                 color: Colors.white,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -195,7 +195,7 @@ class _ScoreTooltipState extends State<ScoreTooltip> {
             line.contains('Broad and healthy') || line.contains('long-term believers') ||
             line.contains('Clear upward') || line.contains('Holding strong') ||
             line.contains('Easy to buy') || line.contains('Well-distributed')) {
-          textColor = Colors.green;
+          textColor = Colors.white;
         } else if (line.contains('Heavy crash') || line.contains('Downward trend') ||
                   line.contains('Weak adoption') || line.contains('Low visibility') ||
                   line.contains('Very new') || line.contains('High whale') ||
