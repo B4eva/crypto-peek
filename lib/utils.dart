@@ -45,7 +45,7 @@ final Map<String, Map<String, String>> metricDescriptionsDetailed = {
     'medium': 'Tradable but may experience some price impact',
     'low': 'Low activity, harder to exit positions safely',
   },
-  'Manipulation': {
+  'Whale Control': {
     'high': 'Well-distributed supply, low whale influence',
     'medium': 'Some concentration among large holders',
     'low': 'High whale control, risk of manipulation',

@@ -1,6 +1,6 @@
 # crypto
 
-A new Flutter project.
+"See Crypto Differently"
 
 ## Getting Started
 

@@ -25,7 +25,7 @@ class CryptoRiskScanner extends ConsumerStatefulWidget {
 }
 
 class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
-  bool isGridView = true;
+  bool isGridView = false;
   final double maxContentWidth = 1300.0;
   final double kMinDesktopWidth = 600.0;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -156,13 +156,13 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
                         ),
                       )
                     else
-                      isGridView
-                          ? SliverGridViewWidget(width: constraints.maxWidth)
-                          :             // Calculator Section
+                      !isGridView
+                          ? 
+                                       // Calculator Section
                    SliverTableViewWidget(
                               isVeryNarrow: constraints.maxWidth < 200,
                               width: constraints.maxWidth,
-                            ),
+                            ): SliverGridViewWidget(width: constraints.maxWidth),
 
                // Footer Section (Contact)
                     SliverToBoxAdapter(
@@ -503,6 +503,13 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider);
                 ),
                 child: Row(
                   children: [
+                     IconButton(
+                      icon: Icon(
+                        Icons.table_rows,
+                        color: !isGridView ? Colors.blue : Colors.grey,
+                      ),
+                      onPressed: () => onViewToggle(false),
+                    ),
                     IconButton(
                       icon: Icon(
                         Icons.grid_view,
@@ -510,13 +517,7 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider);
                       ),
                       onPressed: () => onViewToggle(true),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.table_rows,
-                        color: !isGridView ? Colors.blue : Colors.grey,
-                      ),
-                      onPressed: () => onViewToggle(false),
-                    ),
+                   
                   ],
                 ),
               ),
