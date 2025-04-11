@@ -536,17 +536,38 @@ class MetricsDisplay extends StatelessWidget {
 }
 
 
+String _estimateManipulation(Coin coin) {
+  // Count green metrics
+  int greenCount = 0;
+  
+  // Market Cap check
+  if (coin.marketCap > 5000000000) greenCount++; // > $5B
+  
+  // Price check
+  if (coin.currentPrice > 1.0) greenCount++; // > $1
+  
+  // Final signal logic
+  if (greenCount >= 2) return 'high';    // Green (score 100)
+  if (greenCount == 1) return 'medium';  // Amber (score 50)
+  return 'low';                         // Red (score 0)
+}
 
 // To this simplified version:
-String _estimateManipulation(Coin coin) {
-  // Get estimated whale percentage
-  final whalePercentage = _calculateWhalePercentage(coin);
+// String _estimateManipulation(Coin coin) {
+//   // Get estimated whale percentage
+//    // Special case for Bitcoin and Ethereum
+//   if (coin.symbol.toLowerCase() == 'btc' || coin.symbol.toLowerCase() == 'eth') {
+//     return 'high';  // Force green for BTC and ETH
+//   }
+
+ 
+//   final whalePercentage = _calculateWhalePercentage(coin);
   
-  // Apply thresholds from your criteria
-  if (whalePercentage < 20) return 'low';     // Green: Whale % < 20%
-  if (whalePercentage <= 50) return 'medium'; // Amber: Whale % 20-50%
-  return 'high';                              // Red: Whale % > 50%
-}
+//   // Apply thresholds from your criteria
+//   if (whalePercentage < 20) return 'low';     // Green: Whale % < 20%
+//   if (whalePercentage <= 50) return 'medium'; // Amber: Whale % 20-50%
+//   return 'high';                              // Red: Whale % > 50%
+// }
 
 
  

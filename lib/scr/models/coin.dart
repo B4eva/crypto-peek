@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 List<Coin> coinFromJson(String str) =>
@@ -16,10 +13,10 @@ class Coin {
   final String name;
   final String image;
   final double currentPrice;
-  final int marketCap;
+  final double marketCap;  // Changed from int to double
   final int marketCapRank;
-  final int fullyDilutedValuation;
-  final int totalVolume;
+  final double fullyDilutedValuation;  // Changed from int to double
+  final double totalVolume;  // Changed from int to double
   final double high24h;
   final double low24h;
   final double priceChange24h;
@@ -80,33 +77,37 @@ class Coin {
         symbol: json["symbol"],
         name: json["name"],
         image: json["image"],
-        currentPrice: json["current_price"]?.toDouble() ?? 0.0,
-        marketCap: json["market_cap"] ?? 0,
+        currentPrice: _safeToDouble(json["current_price"]),
+        marketCap: _safeToDouble(json["market_cap"]),
         marketCapRank: json["market_cap_rank"] ?? 0,
-        fullyDilutedValuation: json["fully_diluted_valuation"] ?? 0,
-        totalVolume: json["total_volume"] ?? 0,
-        high24h: json["high_24h"]?.toDouble() ?? 0.0,
-        low24h: json["low_24h"]?.toDouble() ?? 0.0,
-        priceChange24h: json["price_change_24h"]?.toDouble() ?? 0.0,
-        priceChangePercentage24h: json["price_change_percentage_24h"]?.toDouble() ?? 0.0,
-        marketCapChange24h: json["market_cap_change_24h"]?.toDouble() ?? 0.0,
-        marketCapChangePercentage24h: json["market_cap_change_percentage_24h"]?.toDouble() ?? 0.0,
-        circulatingSupply: json["circulating_supply"]?.toDouble() ?? 0.0,
-        totalSupply: json["total_supply"]?.toDouble() ?? 0.0,
-        maxSupply: json["max_supply"]?.toDouble(),
-        ath: json["ath"]?.toDouble() ?? 0.0,
-        athChangePercentage: json["ath_change_percentage"]?.toDouble() ?? 0.0,
+        fullyDilutedValuation: _safeToDouble(json["fully_diluted_valuation"]),
+        totalVolume: _safeToDouble(json["total_volume"]),
+        high24h: _safeToDouble(json["high_24h"]),
+        low24h: _safeToDouble(json["low_24h"]),
+        priceChange24h: _safeToDouble(json["price_change_24h"]),
+        priceChangePercentage24h: _safeToDouble(json["price_change_percentage_24h"]),
+        marketCapChange24h: _safeToDouble(json["market_cap_change_24h"]),
+        marketCapChangePercentage24h: _safeToDouble(json["market_cap_change_percentage_24h"]),
+        circulatingSupply: _safeToDouble(json["circulating_supply"]),
+        totalSupply: _safeToDouble(json["total_supply"]),
+        maxSupply: json["max_supply"] != null ? _safeToDouble(json["max_supply"]) : null,
+        ath: _safeToDouble(json["ath"]),
+        athChangePercentage: _safeToDouble(json["ath_change_percentage"]),
         athDate: DateTime.parse(json["ath_date"]),
-        atl: json["atl"]?.toDouble() ?? 0.0,
-        atlChangePercentage: json["atl_change_percentage"]?.toDouble() ?? 0.0,
+        atl: _safeToDouble(json["atl"]),
+        atlChangePercentage: _safeToDouble(json["atl_change_percentage"]),
         atlDate: DateTime.parse(json["atl_date"]),
         roi: json["roi"],
         lastUpdated: DateTime.parse(json["last_updated"]),
         sparklineIn7d: json["sparkline_in_7d"] != null 
-            ? List<double>.from(json["sparkline_in_7d"]["price"].map((x) => x.toDouble()))
+            ? List<double>.from(json["sparkline_in_7d"]["price"].map((x) => _safeToDouble(x)))
             : null,
-        priceChangePercentage24hInCurrency: json["price_change_percentage_24h_in_currency"]?.toDouble(),
-        priceChangePercentage7dInCurrency: json["price_change_percentage_7d_in_currency"]?.toDouble(),
+        priceChangePercentage24hInCurrency: json["price_change_percentage_24h_in_currency"] != null
+            ? _safeToDouble(json["price_change_percentage_24h_in_currency"])
+            : null,
+        priceChangePercentage7dInCurrency: json["price_change_percentage_7d_in_currency"] != null
+            ? _safeToDouble(json["price_change_percentage_7d_in_currency"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -146,8 +147,8 @@ class Coin {
       priceChange24h: priceChange24h,
       priceChange7d: priceChangePercentage7dInCurrency ?? 0.0,
       priceChange30d: priceChangePercentage24h ?? 0.0, // Assuming you have a way to get this
-      marketCap: marketCap.toDouble(),
-      totalVolume: totalVolume.toDouble(),
+      marketCap: marketCap,
+      totalVolume: totalVolume,
     );
   }
 
@@ -167,7 +168,21 @@ class Coin {
       marketCap / totalVolume > 100,  // Whale manipulation resistance
     ];
   }
+}
 
+// Helper function to safely convert any value to double
+double _safeToDouble(dynamic value) {
+  if (value == null) return 0.0;
+  if (value is int) return value.toDouble();
+  if (value is double) return value;
+  if (value is String) {
+    try {
+      return double.parse(value);
+    } catch (_) {
+      return 0.0;
+    }
+  }
+  return 0.0;
 }
 
 class Roi {
@@ -182,9 +197,9 @@ class Roi {
   });
 
   factory Roi.fromJson(Map<String, dynamic> json) => Roi(
-        times: json["times"]?.toDouble(),
+        times: _safeToDouble(json["times"]),
         currency: currencyValues.map[json["currency"]]!,
-        percentage: json["percentage"]?.toDouble(),
+        percentage: _safeToDouble(json["percentage"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -210,10 +225,6 @@ class EnumValues<T> {
     return reverseMap;
   }
 }
-
-
-
-
 
 class MetricScore {
   final int score;

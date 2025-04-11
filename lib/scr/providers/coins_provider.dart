@@ -1,4 +1,4 @@
-import 'package:crypto_tracker/scr/api_service.dart';
+import 'package:crypto_tracker/scr/api/api_service.dart';
 import 'package:crypto_tracker/scr/models/coin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

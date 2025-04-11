@@ -17,6 +17,7 @@ import 'package:crypto_tracker/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 class CryptoRiskScanner extends ConsumerStatefulWidget {
   const CryptoRiskScanner({Key? key}) : super(key: key);
   
@@ -25,7 +26,7 @@ class CryptoRiskScanner extends ConsumerStatefulWidget {
 }
 
 class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
-  bool isGridView = false;
+  bool isGridView = true;
   final double maxContentWidth = 1300.0;
   final double kMinDesktopWidth = 600.0;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
@@ -144,7 +145,7 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
                       ),
                     ),
 
-                    // Content Section
+                    //Content Section
                     if (coinProvider.isLoading)
                       const SliverFillRemaining(
                         child: Center(
@@ -156,13 +157,13 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
                         ),
                       )
                     else
-                      !isGridView
-                          ? 
-                                       // Calculator Section
+                      isGridView
+                          ?  SliverGridViewWidget(width: constraints.maxWidth)
+                                      :
                    SliverTableViewWidget(
                               isVeryNarrow: constraints.maxWidth < 200,
                               width: constraints.maxWidth,
-                            ): SliverGridViewWidget(width: constraints.maxWidth),
+                            ),
 
                // Footer Section (Contact)
                     SliverToBoxAdapter(
@@ -176,6 +177,22 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
                             // Add contact form or content here
                         //    const Footer(),
                             SizedBox(height: 30),
+                                Row(
+                             mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text('Send us an Email:', style: TextStyle(color: Colors.white),),
+                                    SizedBox(width: 10),
+                                    Text(
+                                                                  'contact@terencebumah.com',
+                                                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.blue,
+                                                                  ),
+                                                                ),
+                                  ],
+                                ),
+
                             Divider(),
                             SizedBox(height: 30),
                             Text(
@@ -286,7 +303,9 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                 ),
-                onPressed: () => navController.scrollToSection(AppSection.contact),
+                onPressed: (){
+                  sendEmail();
+                },
                 child: const Text(
                   "Contact",
                   style: TextStyle(
@@ -301,6 +320,8 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
       ),
     );
   }
+
+   
 
   Widget _buildHeader(BuildContext context) {
     // Get the screen width to make responsive adjustments
@@ -351,15 +372,16 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
               ),
               children: [
                 TextSpan(
-                  text: "See Crypto ",
+                  text: "Peek Before You Buy Crypto ",
                   style: TextStyle(
-                    color: const Color(0xFF2752E7),
+                  //  color: const Color(0xFF2752E7),
+                      color: Colors.white,
                     fontSize: titleFontSize,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 TextSpan(
-                  text: "Differently",
+                  text: "",
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontSize: titleFontSize,
@@ -374,7 +396,7 @@ class _CryptoRiskScannerState extends ConsumerState<CryptoRiskScanner> {
           SizedBox(
             width: containerWidth,
             child: Text(
-              'Never miss a beat. CoinPeek is your early warning system for crypto — transforming noisy, complex data into clear, explainable signals that help you avoid bad bets and uncover hidden opportunities',
+              'Don’t trade crypto blind. CoinPeek helps you analyze any coin’s risk, so you can avoid crypto scams, bad bets, and big losses.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: const Color(0xFFFFFFFF),
@@ -503,6 +525,13 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider);
                 ),
                 child: Row(
                   children: [
+                                 IconButton(
+                      icon: Icon(
+                        Icons.grid_view,
+                        color: isGridView ? Colors.blue : Colors.grey,
+                      ),
+                      onPressed: () => onViewToggle(true),
+                    ),
                      IconButton(
                       icon: Icon(
                         Icons.table_rows,
@@ -510,13 +539,7 @@ final coinProvider = ref.watch<CoinsProvider>(coinsProvider);
                       ),
                       onPressed: () => onViewToggle(false),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.grid_view,
-                        color: isGridView ? Colors.blue : Colors.grey,
-                      ),
-                      onPressed: () => onViewToggle(true),
-                    ),
+       
                    
                   ],
                 ),

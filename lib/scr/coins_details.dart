@@ -1,4 +1,4 @@
-import 'package:crypto_tracker/scr/api_service.dart';
+import 'package:crypto_tracker/scr/api/api_service.dart';
 import 'package:crypto_tracker/scr/models/coin.dart';
 import 'package:crypto_tracker/scr/providers/coins_provider.dart';
 import 'package:crypto_tracker/scr/widgets/price_chat.dart';

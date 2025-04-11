@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:html' as html;
 
 
 // Define section enum
@@ -51,3 +53,53 @@ final Map<String, Map<String, String>> metricDescriptionsDetailed = {
     'low': 'High whale control, risk of manipulation',
   },
 };
+
+ // Import for web-specific implementation
+
+// Function to send email - with web fallback
+Future<void> sendEmail() async {
+  final recipientEmail = 'contact@terencebumah.com';
+  final subject = '';
+  final body = '';
+  
+  // Create the mailto URI
+  final Uri emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: recipientEmail,
+    query: encodeQueryParameters({
+      'subject': subject,
+      'body': body
+    }),
+  );
+  
+  // First try using url_launcher
+  try {
+    final launched = await launchUrl(emailLaunchUri);
+    if (!launched) {
+      // Fallback for web
+      _launchEmailWeb(recipientEmail, subject, body);
+    }
+  } catch (e) {
+    print('Error with url_launcher: $e');
+    // Fallback for web
+    _launchEmailWeb(recipientEmail, subject, body);
+  }
+}
+
+// Web-specific email launcher
+void _launchEmailWeb(String email, String subject, String body) {
+  try {
+    final mailtoLink = 'mailto:$email?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
+    html.window.open(mailtoLink, '_blank');
+  } catch (e) {
+    print('Could not open email client: $e');
+  }
+}
+
+// Helper function to encode query parameters
+String? encodeQueryParameters(Map<String, String> params) {
+  return params.entries
+      .map((MapEntry<String, String> e) => 
+          '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+}

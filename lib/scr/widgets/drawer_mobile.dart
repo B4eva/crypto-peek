@@ -57,7 +57,8 @@ class MobileDrawer extends ConsumerWidget {
                     ),
                     onPressed: () {
                       Navigator.pop(context); // Close drawer
-                      navController.scrollToSection(AppSection.contact);
+                      // navController.scrollToSection(AppSection.contact);
+                      sendEmail();
                     },
                     child: const Text(
                       "Contact",

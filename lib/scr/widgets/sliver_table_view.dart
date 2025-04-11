@@ -797,16 +797,38 @@ Map<String, MetricScore> _calculateAllMetrics(Coin coin) {
   return estimatedWhalePercentage;
 }
 
-String _estimateManipulation(Coin coin) {
-  // Get the estimated whale percentage for this coin
-  final whalePercentage = _calculateWhalePercentage(coin);
-  
-  // Apply thresholds based on whale percentage
-  if (whalePercentage < 20) return 'low';     // Green: Whale % < 20%
-  if (whalePercentage <= 50) return 'medium'; // Amber: Whale % 20-50%
-  return 'high';                              // Red: Whale % > 50%
-}
+// String _estimateManipulation(Coin coin) {
 
+//    // Special case for Bitcoin and Ethereum
+//   if (coin.symbol.toLowerCase() == 'btc' || coin.symbol.toLowerCase() == 'eth') {
+//     return 'high';  // Force green for BTC and ETH
+//   }
+
+//   // Get the estimated whale percentage for this coin
+//   final whalePercentage = _calculateWhalePercentage(coin);
+  
+//   // Apply thresholds based on whale percentage
+//   if (whalePercentage < 20) return 'low';     // Green: Whale % < 20%
+//   if (whalePercentage <= 50) return 'medium'; // Amber: Whale % 20-50%
+//   return 'high';                              // Red: Whale % > 50%
+// }
+
+
+String _estimateManipulation(Coin coin) {
+  // Count green metrics
+  int greenCount = 0;
+  
+  // Market Cap check
+  if (coin.marketCap > 5000000000) greenCount++; // > $5B
+  
+  // Price check
+  if (coin.currentPrice > 1.0) greenCount++; // > $1
+  
+  // Final signal logic
+  if (greenCount >= 2) return 'high';    // Green
+  if (greenCount == 1) return 'medium'; // Amber
+  return 'low';                        // Red
+}
   MetricScore _rateMetric(String rating) {
     switch (rating.toLowerCase()) {
       case 'high':
